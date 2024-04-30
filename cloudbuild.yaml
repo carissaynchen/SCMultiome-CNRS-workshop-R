@@ -1,0 +1,7 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-m', '30g', '-t', 'gcr.io/sunny-might-421907-m4/cnrstmp:alpha', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/sunny-might-421907-m4/cnrstmp:alpha']
+options:
+  machineType: '

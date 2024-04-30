@@ -1,0 +1,18 @@
+url: https://SydneyBioX.github.io/BuildABiocWorkshop
+
+template:
+  params:
+    bootswatch: flatly
+    #ganalytics: UA-99999999-9
+
+home:
+  title: "scdneyAdvancedPhenotyping"
+  type: inverse
+
+
+navbar:
+  right:
+   - icon: fa-github
+     href: https://github.com/SydneyBioX/scdneyAdvancedPhenotyping
+     
+
