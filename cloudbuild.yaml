@@ -4,5 +4,5 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/sunny-might-421907-m4/scmultiomecnrsR:alpha']
 options:
- machineType: 'E2_MICRO'
+ machineType: 'E2_STANDARD_2'
 timeout: 9600s
