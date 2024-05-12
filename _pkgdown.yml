@@ -1,4 +1,4 @@
-url: https://SydneyBioX.github.io/BuildABiocWorkshop
+url: https://github.com/carissaynchen/SCMultiome-CNRS-workshop-R
 
 template:
   params:
@@ -6,13 +6,10 @@ template:
     #ganalytics: UA-99999999-9
 
 home:
-  title: "scdneyAdvancedPhenotyping"
+  title: "Single-cell Multiome Workshop in R"
   type: inverse
-
 
 navbar:
   right:
    - icon: fa-github
-     href: https://github.com/SydneyBioX/scdneyAdvancedPhenotyping
-     
-
+     href: https://github.com/carissaynchen/SCMultiome-CNRS-workshop-R

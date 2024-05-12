@@ -1,6 +1,4 @@
-  
-
-# DO NOT EDIT 'install.R'; instead, edit 'install.R.in' and
+  # DO NOT EDIT 'install.R'; instead, edit 'install.R.in' and
 # use 'rake' to generate 'install.R'.
 
 if ("BiocManager" %in% rownames(installed.packages()))
@@ -11,11 +9,10 @@ install.packages("BiocManager", repos="https://cran.rstudio.com")
 #devtools::install_github("Bioconductor/BiocManager")
 library(BiocManager)
 
-if(BiocManager::version() != "3.14"){
-  BiocManager::install(version="3.14",
+if(BiocManager::version() != "3.18"){
+  BiocManager::install(version="3.18",
                        update=TRUE, ask=FALSE)
 }
-
 
 std_pkgs <- c(
   "devtools", 

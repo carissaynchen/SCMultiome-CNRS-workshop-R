@@ -1,47 +1,25 @@
-Package: scdneyAdvancedPhenotyping
-Title: Advanced Phenotyping using scdney
-Version: 0.1.0
+Title: SCMultiome Workshop at CNRS
+Version: 0.99.0
 Authors@R: 
-    person(given = "Sydney Precision Bioinformatics Alliance",
-           role = c("aut", "cre"),
-           email = "bioinformatics@maths.usyd.edu.au")
-Description: Workshop for single-cell phenotyping analysis.
+    person(given = "Carissa", family = "Chen", email = "carissa.chen@sydney.edu.au", role=c("aut", "cre"),
+    person(given = "Sharon", family = "Long", email = "siqu.long@sydney.edu.au", role=c("aut"))
+Description: Workshop for single-cell RNA-seq and multiomic analysis - R component
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.1
 Depends: 
-    Biobase,
     R (>= 4.1)
 Imports: 
-    SingleCellExperiment,
-    Cepo,
-    slingshot,
-    scater,
-    ggthemes,
-    reshape2,
-    ggridges,
-    monocle3,
-    velocyto.R,
-    scran,
-    igraph,
-    ggpubr,
-    tradeSeq,
-    DT,
-    clusterProfiler,
-    org.Mm.eg.db,
-    clusterExperiment
+    SingleCellExperiment
 Suggests: 
     knitr,
     rmarkdown,
     pkgdown,
     spdep
-URL: https://SydneyBioX.github.io/scdneyAdvancedPhenotyping/
-BugReports: https://github.com/SydneyBioX/scdneyAdvancedPhenotyping/issues/new/choose
+URL: https://github.com/carissaynchen/SCMultiome-CNRS-workshop-R
+BugReports: https://github.com/carissaynchen/SCMultiome-CNRS-workshop-R/issues/new/choose
 VignetteBuilder: knitr
-DockerImage: yingxinlin/scdneyphenotyping:latest
 Remotes: 
-    PYangLab/Cepo,
-    cole-trapnell-lab/monocle3,
-    velocyto-team/velocyto.R
+    PYangLab/Cepo
