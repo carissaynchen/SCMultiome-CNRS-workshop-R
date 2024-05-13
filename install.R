@@ -15,25 +15,21 @@ if(BiocManager::version() != "3.18"){
 }
 
 std_pkgs <- c(
-  "devtools", 
-  "batchelor" , "pcaMethods", # dependencies for other packages , and need be installed first
+  "devtools", # dependencies for other packages , and need be installed first
   "edgeR",
   "ggpubr", "MAST", 
   "plyr", "Rtsne", 
   "scales", "scater", "SingleCellExperiment",
-  "Cepo", "slingshot" , "UpSetR", 
+  "slingshot" , "UpSetR", 
   "scran", "tidyverse", 
-  "viridis", "monocle",
+  "viridis",
   "ggthemes",  "ggridges", "reshape2" , "ggpubr", 
   "DT",   "DescTools", 
-  "tradeSeq",
   "clusterExperiment",
-  "clusterProfiler",
-  "org.Mm.eg.db"
+  "clusterProfiler"
   )
 
-gh_pkgs <- c( "theislab/destiny", # dependencies for other packages , and need be installed first
-              "MarioniLab/DropletUtils",
+gh_pkgs <- c("MarioniLab/DropletUtils",
               "jokergoo/ComplexHeatmap")
 
 builtins <- c(std_pkgs, gh_pkgs)

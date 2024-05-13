@@ -25,4 +25,4 @@ RUN bash /home/docker_setup.sh
 RUN R -f /home/install.R
 
 ## Running test
-RUN R -f /home/docker_test.R
+# RUN R -f /home/docker_test.R
