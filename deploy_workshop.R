@@ -9,9 +9,9 @@ tag = "gcr.io/sunny-might-421907-m4/scmultiomecnrsR:alpha"
 
 vm1 <- gce_vm(template = "rstudio",
               name = "scmultiomecnrs1",
-              disk_size_gb = 10,
+              disk_size_gb = 100,
               # predefined_type = "n2-standard-32",
-              predefined_type = "e2-micro",
+              predefined_type = "e2-highcpu-8",
               dynamic_image = tag,
               user = "rstudio",
               password = "test")
