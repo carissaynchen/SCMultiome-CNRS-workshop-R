@@ -370,6 +370,7 @@ cor(monocle3_pseudotime, pseudotime_umap[, 1], use = "complete.obs")
 **Questions:**
 
 - Can we use `order_cells` in `monocle3` if we do not know what the `root` cell type is?
+- Do the results vary when you use a different dimensionality technique or vary the selection of features?
 
 <br>
 
