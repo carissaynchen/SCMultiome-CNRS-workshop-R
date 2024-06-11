@@ -17,8 +17,8 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/howmany/howmany
 
 helpers <- c("devtools", "remotes", "batchelor", "pcaMethods")
 for (helper in helpers)
-  if (!suppressWarnings(require(builtin, character.only=TRUE)))
-    suppressWarnings(install.packages(builtin, ask=FALSE))
+  if (!suppressWarnings(require(helper, character.only=TRUE)))
+    suppressWarnings(install.packages(helper, ask=FALSE))
 
 std_pkgs <- c(
   "SingleCellExperiment", "scater", "scran", "scDblFinder",
