@@ -29,9 +29,11 @@ std_pkgs <- c(
   "edgeR", "Rtsne", "scales",
   "slingshot" , "monocle", "UpSetR", 
   "clusterExperiment", "clusterProfiler", "scHOT", "org.Mm.eg.db",
-  "CiteFuse"
+  "CiteFuse", 'Signac', 'BSgenome.Hsapiens.UCSC.hg38', 'EnsDb.Hsapiens.v86', 'rhdf5', 'HDF5Array', 'rtracklayer', 'GenomicRanges'
 )
 remotes::install_github("satijalab/seurat", "seurat5", quiet = TRUE)
+remotes::install_github("mojaveazure/seurat-disk", quiet = TRUE)
+install.packages('caret', dependencies = TRUE)
 
 gh_pkgs <- c("MarioniLab/DropletUtils",
 "jokergoo/ComplexHeatmap",
