@@ -32,15 +32,15 @@ jobs:
         with:
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::pkgdown, local::.
-          needs: website
-          
       - name: Install howmany from source
         run: |
           install.packages("https://cran.r-project.org/src/contrib/Archive/howmany/howmany_0.3-1.tar.gz", repos=NULL, type="source")
         shell: Rscript {0}
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::pkgdown, local::.
+          needs: website
 
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
