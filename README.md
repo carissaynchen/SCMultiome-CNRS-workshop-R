@@ -1,1 +1,1 @@
-# SCMultiome-CNRS-workshop
+# SCMultiome Workshop at CNRS
