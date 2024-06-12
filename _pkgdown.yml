@@ -6,22 +6,19 @@ home:
   title: SCMultiome Workshop at CNRS
   type: inverse
 navbar:
-  structure:
-    right: [github]
-    left: [articles]
-  components:
-    github:
+ components:
+   articles:
+    text: Articles
+    menu:
+      - text: Introduction to single-cell pre-processing
+        href: articles/introduction_to_single-cell.html
+      - text: Basics of single-cell annotation
+        href: articles/basics_of_single-cell_annotation.html
+      - text: Advanced Cell Phenotyping
+        href: articles/advancedphenotyping.html
+   github:
       icon: fa-github
       href: https://github.com/carissaynchen/SCMultiome-CNRS-workshop-R
-    articles:
-      text: Articles
-      menu:
-        - text: Introduction to single-cell pre-processing
-          href: articles/introduction_to_single-cell.html
-        - text: Basics of single-cell annotation
-          href: articles/basics_of_single-cell_annotation.html
-        - text: Advanced Cell Phenotyping
-          href: articles/advancedphenotyping.html
         
-      
-
+        
+        
