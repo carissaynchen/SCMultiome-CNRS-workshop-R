@@ -17,18 +17,19 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/howmany/howmany
 
 helpers <- c("devtools", "remotes", "batchelor", "pcaMethods")
 for (helper in helpers)
-  if (!suppressWarnings(require(builtin, character.only=TRUE)))
-    suppressWarnings(install.packages(builtin, ask=FALSE))
+  if (!suppressWarnings(require(helper, character.only=TRUE)))
+    suppressWarnings(install.packages(helper, ask=FALSE))
 
 std_pkgs <- c(
   "SingleCellExperiment", "scater", "scran", "scDblFinder",
   "ggthemes", "ggridges", "reshape2" , "ggpubr", "ggplot2", "ggrastr", "patchwork",
-  "viridis", "shiny",
+  "viridis", "shiny", "Signac", "EnsDb.Hsapiens.v86",
   "tidyverse", "plyr", "BiocParallel",
   "mclust", "DT", "DescTools", "tradeSeq",
   "edgeR", "Rtsne", "scales",
   "slingshot" , "UpSetR", 
   "clusterExperiment", "clusterProfiler", "scHOT", "org.Mm.eg.db",
+  "BSgenome.Hsapiens.UCSC.hg38",
   "CiteFuse"
 )
 remotes::install_github("satijalab/seurat", "seurat5", quiet = TRUE)
@@ -37,7 +38,8 @@ gh_pkgs <- c("MarioniLab/DropletUtils",
 "jokergoo/ComplexHeatmap",
 "immunogenomics/presto",
 "PYangLab/Cepo",
-"cole-trapnell-lab/monocle3")
+"cole-trapnell-lab/monocle3",
+"mojaveazure/seurat-disk")
 
 builtins <- c(std_pkgs, gh_pkgs)
 

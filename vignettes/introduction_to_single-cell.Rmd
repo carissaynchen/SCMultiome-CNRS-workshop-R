@@ -4,6 +4,8 @@ author: Carissa Chen^[cchen@cmri.org.au]
         Sharon Long^[slong@cmri.org.au]
 output:
   html_document:
+    theme: flatly
+    css: https://use.fontawesome.com/releases/v5.0.6/css/all.css
     code_folding: show
     number_sections: true
     toc: yes
@@ -19,7 +21,9 @@ knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
   comment = "#>",
-  width = 60
+  width = 60,
+  cache = TRUE,
+  root.dir = "./data"
 )
 
 set.seed(2024)
@@ -33,7 +37,7 @@ Single-cell RNA-sequencing has allowed us to dissect cellular heterogeneity at a
 
 <br>
 
-## Preparation and assumed knowledge
+<span class="fa-stack fa"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i></span> **Preparation and assumed knowledge**
 
 - Knowledge of R syntax
 - Familiarity with the [Single-cell data analysis guide](https://bioconductor.org/books/release/OSCA/index.html) 
@@ -41,7 +45,7 @@ Single-cell RNA-sequencing has allowed us to dissect cellular heterogeneity at a
 
 <br>
 
-## Learning objectives
+<span class="fa-stack fa"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-location-arrow fa-stack-1x fa-inverse"></i></span> **Learning objectives**
 
 - Carry out typical single-cell processing and QC workflow
 - generate appropriate QC graphics
@@ -97,10 +101,9 @@ theme_set(theme_bw())
 
 We provide the original data downloaded from GSE104323 into a SingleCellExperiment class object. It contains 24,185 cells and 27,932 genes. Below are typical functions to interact with the SCE object.
 
-```{r}
+```{r cache=FALSE}
 # code to load data 
-data_path <- system.file("data", "hippocampus_all_ages.rda", package = "SCMultiomeCNRSR")
-load(file=data_path)
+load(file="../data/hippocampus_all_ages.rda")
 sce <- hippocampus_all_ages
 rm(hippocampus_all_ages)
 ```
@@ -142,7 +145,7 @@ From this bar plot, we see that each age has different, particularly P120. Given
 
 Next, we use `addPerCellQC` function from the `scater` package to calculate per-cell QC metrics for our count matrix. This gives us the sum of counts ('sum'), number of detected features ('detected') and we also calculate the same metrics for mitochondrial genes, a common method to measure cell death. We measure the sparsity of gene expression in a cell by calculating the percentage of zero counts per cell.
 
-```{r}
+```{r cache=FALSE}
 subset <- list(mito = grep("^MT-", rownames(sce)))
 sce <- scater::addPerCellQC(sce, assay.type = "counts", subsets=subset, threshold=0)
 sce$pZero <- colSums2(as.matrix(counts(sce)) == 0)/nrow(sce)
@@ -153,7 +156,10 @@ head(colData(sce))
 
 Then we visualise the per-cell QC metrics using a boxplot visualisation.
 
-**Questions**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 + What can you infer about the quality of the samples from these boxplots?
 + How would you choose the appropriate filtering thresholds?
@@ -238,12 +244,15 @@ Hence, doublet detection and removal is an important step in pre-processing as i
 
 After running `scDblFinder`, we first plot a bar plot to visualise how many doublets we have in our dataset. Then, we can additionally confirm they are indeed doublets by visualisation their distribution of UMI counts, number of genes and proportion of zero expression compared to singlets.
 
-**Questions**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 + What do you notice about the differences in distribution between the singlets and doublets?
 + Is this expected and why?
 
-```{r}
+```{r cache=FALSE}
 sce <- scDblFinder(sce, samples="age", clusters=TRUE, BPPARAM=MulticoreParam(3))
 ```
 
@@ -289,7 +298,7 @@ From the boxplots, we see that the doublet population generally has higher total
 
 # Save the processed data
 
-```{r}
+```{r cache=FALSE}
 idx = sce$nUMI < 20000 & sce$pMito < 10 & sce$pZero < 0.98 & sce$scDblFinder.class == "singlet"
 sce <- sce[, idx]
 

@@ -4,6 +4,8 @@ author: Carissa Chen^[cchen@cmri.org.au]
         Sharon Long^[slong@cmri.org.au]
 output:
    html_document:
+     theme: flatly
+     css: https://use.fontawesome.com/releases/v5.0.6/css/all.css
      code_folding: hide
      number_sections: yes
      toc: yes
@@ -18,7 +20,9 @@ knitr::opts_chunk$set(
    collapse = TRUE,
    warning = FALSE,
    message = FALSE,
-   comment = "#>"
+   comment = "#>",
+   cache = TRUE,
+   root.dir = "./data"
    )
 set.seed(2024)
 ```
@@ -31,7 +35,7 @@ Cellular phenotyping broadly refers to all procedures that aim to identify the i
 
 <br>
 
-## Preparation and pre-reading
+<span class="fa-stack fa"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i></span> **Preparation and pre-reading**
 
 - [Trajectory analysis with Slingshot](https://doi.org/10.1186/s12864-018-4772-0)
 - [Trajectory analysis with Monocle3](https://doi.org/10.1038/s41586-019-0969-x)
@@ -40,7 +44,7 @@ Cellular phenotyping broadly refers to all procedures that aim to identify the i
 
 <br>
 
-## Learning objectives
+<span class="fa-stack fa"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-location-arrow fa-stack-1x fa-inverse"></i></span> **Learning objectives**
 
 - identify different workflows to build trajectory including calculate pseudo-times
 - generate appropriate graphics to visualise the trajectories and expression of genes
@@ -110,9 +114,8 @@ library(BiocParallel)
 theme_set(theme_bw())
 ```
 
-```{r}
-data_path <- system.file("data", "hippocampus_minimal.rda", package = "SCMultiomeCNRSR")
-load(file=data_path)
+```{r cache=FALSE}
+load(file="../data/hippocampus_minimal.rda")
 sce <- hippocampus_minimal
 rm(hippocampus_minimal)
 
@@ -162,7 +165,7 @@ cepoGenes = unique(unlist(Cepo::topGenes(cepo, n = 150)))
 
 The code below demonstrate using Cepo selected genes to perform PCA.
 
-```{r fig.height=6}
+```{r fig.height=6, cache=FALSE}
 set.seed(2024)
 sce = scater::runPCA(sce, scale = TRUE, subset_row = cepoGenes, name="PCA_Cepo")
 plotReducedDim(sce, dimred = "PCA_Cepo", colour_by = "cell_cluster", point_size=0.5) + ggtitle("Cepo_PCA")
@@ -170,7 +173,7 @@ plotReducedDim(sce, dimred = "PCA_Cepo", colour_by = "cell_cluster", point_size=
 
 Similarly, there are different dimensionality reduction approaches and we again illustrate the use of t-SNE and UMAP to achieve the same purposes.
 
-```{r fig.height=6, fig.width=12}
+```{r fig.height=6, fig.width=12, cache=FALSE}
 set.seed(2024)
 sce = scater::runTSNE(sce, dimred = "PCA", name="TSNE_Cepo", BPPARAM= MulticoreParam(workers = 4))
 sce = scater::runUMAP(sce, dimred = "PCA", name="UMAP_Cepo", min_dist=0.5,  BPPARAM=MulticoreParam(workers = 4))
@@ -282,15 +285,15 @@ ggplot() +
 
 For users wanting to explore alternative methods to build the trajectory, please refer to the [dynverse framework](https://dynverse.org/), which provides a uniform interface to
 run more than 50 trajectory inference methods.
-
-**Questions**
+    
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 - Do these orderings make sense given the cluster labels? Why?
 - Would specifying starting cluster (`start.clus`) or not impact our
     trajectory results?
-    
-**Discussion:**
-
 - As an additional exercise, would performing dimensionality reduction with a different set/number of selected features impact the trajectory results? What if you try a different dimensionality reduction technique?
 
 <br>
@@ -324,7 +327,10 @@ plot_cells(cds, reduction_method = "UMAP",
   theme(aspect.ratio = 1)
 ```
 
-**Interpretation:**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <i class="far fa-chart-bar fa-stack-1x fa-inverse"></i>
+</span> **Interpretation:**
 
 Similar to the approach using `slingshot`, visualisation of the `monocle3` approach shows two distinct lineages, replicating the bifurcation point at the `Neuroblast`.
 
@@ -370,10 +376,12 @@ plot(monocle3_pseudotime, pseudotime_umap[, 1], xlab = "Monocle 3", ylab = "Slin
 cor(monocle3_pseudotime, pseudotime_umap[, 1], use = "complete.obs")
 ```
 
-**Questions:**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 - Can we use `order_cells` in `monocle3` if we do not know what the `root` cell type is?
-- Do the results vary when you use a different dimensionality technique or vary the selection of features?
 
 <br>
 
@@ -414,8 +422,7 @@ This component is computationally intensive, and the 'fitGAM' process, as seen b
 library(tradeSeq)
 slingshot_umap <- slingshot_umap[!duplicated(rownames(slingshot_umap)),]
 
-data_path <- system.file("data", "slingshot_umap.rda", package = "SCMultiomeCNRSR")
-if (!file.exists(data_path)) {
+if (!file.exists("../data/slingshot_umap.rda")) {
   slingshot_umap <- fitGAM(slingshot_umap,
                            genes = cepoGenes,
                            nknots = 6,
@@ -424,9 +431,9 @@ if (!file.exists(data_path)) {
                            sce = TRUE,
                            family = "nb",
                            gcv = FALSE)
-  save(slingshot_umap, file = data_path)
+  save(slingshot_umap, file = "../data/slingshot_umap.rda")
 } else {
-  load(file=data_path)
+  load(file="../data/slingshot_umap.rda")
 }
 
 table(rowData(slingshot_umap)$tradeSeq$converged)
@@ -468,7 +475,10 @@ length(intersect(lineage1Genes, lineage2Genes))
 plotSmoothers(slingshot_umap, counts(slingshot_umap), gene = c("RUNX1T1"))
 ```
 
-**Interpretation:**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <i class="far fa-chart-bar fa-stack-1x fa-inverse"></i>
+</span> **Interpretation:**
 
 - Based on the upset graphics, we see there is a large overlap in DE genes between the three lineages (around 93%).
 - From the pseudotime graph, we can check whether the expression of an identified DE gene indeed change over pseudotime within each lineage. As an example, we select `RUNX1T1`, a gene that has been
@@ -494,7 +504,10 @@ length(patternGenes)
 plotSmoothers(slingshot_umap, counts(slingshot_umap), gene = c("SYT4"))
 ```
 
-**Results and Interpretation:**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <i class="far fa-chart-bar fa-stack-1x fa-inverse"></i>
+</span> **Interpretation:**
 
 - We have 454 of 567 genes demonstrate differential gene expression patterns between lineages.
 - It is critical, like with any omics data study, to double-check our results using visualisation. For this question, we will visualise the change in the expression of the most important gene, `SYT4`.
@@ -523,13 +536,12 @@ available methods). `clusterExpressionPatterns` take a few minutes to run in our
 library(clusterExperiment)
 nPointsClus <- 20
 
-data_path <- system.file("data", "clusPat.rda", package = "SCMultiomeCNRSR")
-if (!file.exists(data_path)) {
+if (!file.exists("../data/clusPat.rda")) {
   clusPat <- tradeSeq::clusterExpressionPatterns(slingshot_umap, nPoints = nPointsClus,
                                        genes = rownames(patternRes))
-  save(clusPat, file=data_path)
+  save(clusPat, file="../data/clusPat.rda")
 } else {
-  load(file=data_path)
+  load(file="../data/clusPat.rda")
 }
 
 clusterLabels <- clusterExperiment::primaryCluster(clusPat$rsec)
@@ -567,7 +579,10 @@ for (xx in 1:4) {
 patchwork::wrap_plots(ggCluster, ncol = 4, nrow = 1)
 ```
 
-**Discussion:**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 - Can you describe the various expression patterns? Note that there are two layers of differences: genes show (1) differential expression across a pseudotime within a lineage **and** (2) these differential expression patterns are significantly different between lineages.
 
@@ -619,7 +634,10 @@ level of significance.
 clusterProfiler::dotplot(ego_res)
 ```
 
-**Discussion:**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 - What are the top enriched pathways from the gene set over-representation analysis?
 - Are the pathways in line with what you expect?
@@ -636,7 +654,7 @@ pseudotime. 1) variability:
 
 **Computation:** To reduce computation time, we will select the top 10 genes identified from `associationTest`.
 
-```{r}
+```{r cache=FALSE}
 library(scHOT)
 
 first_branch_cells <- !is.na(slingshot_umap$slingPseudotime_1)
@@ -647,8 +665,7 @@ gene_to_test <- t(combn(assoRes_lingeage1_top10, 2))
 To identify gene pairs that are differential correlated across the pseudotime for each lineage, we visualise the results of the top 5 significant gene pairs that demonstrate differential correlation across our pseudotime.
 
 ```{r warning=FALSE}
-data_path <- system.file("data", "scHOT_obj.rda", package = "SCMultiomeCNRSR")
-if(!file.exists(data_path)) {
+if(!file.exists("../data/scHOT_obj.rda")) {
   scHOT_obj <- scHOT_buildFromMatrix(
     mat = logcounts(slingshot_umap)[,first_branch_cells],
     cellData = list(pseudotime = slingshot_umap$slingPseudotime_1[first_branch_cells]),
@@ -664,9 +681,9 @@ if(!file.exists(data_path)) {
                      numberPermutations = 50)
   
   scHOT_obj@scHOT_output <- scHOT_obj@scHOT_output[order(scHOT_obj@scHOT_output$FDREstimated),]
-  save(scHOT_obj, file = data_path)
+  save(scHOT_obj, file ="../data/scHOT_obj.rda")
 } else {
-  load(file=data_path)
+  load(file="../data/scHOT_obj.rda")
 }
 
 plotHigherOrderSequence(scHOT_obj, rownames(scHOT_obj@scHOT_output)[1:5])

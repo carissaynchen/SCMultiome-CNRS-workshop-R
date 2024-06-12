@@ -50,8 +50,12 @@ Imports:
     clusterProfiler,
     scHOT,
     org.Mm.eg.db,
+    EnsDb.Hsapiens.v86,
+    BSgenome.Hsapiens.UCSC.hg38,
     CiteFuse,
-    SingleCellExperiment
+    SingleCellExperiment,
+    Signac,
+    SeuratDisk
 Suggests: 
     knitr,
     rmarkdown,
@@ -66,4 +70,5 @@ Remotes:
     MarioniLab/DropletUtils,
     immunogenomics/presto,
     jokergoo/ComplexHeatmap,
-    cole-trapnell-lab/monocle3
+    cole-trapnell-lab/monocle3,
+    mojaveazure/seurat-disk

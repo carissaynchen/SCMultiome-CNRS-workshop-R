@@ -4,6 +4,8 @@ author: Carissa Chen^[cchen@cmri.org.au]
         Sharon Long^[slong@cmri.org.au]
 output:
   html_document:
+    theme: flatly
+    css: https://use.fontawesome.com/releases/v5.0.6/css/all.css
     code_folding: hide
     number_sections: true
     toc: yes
@@ -19,7 +21,9 @@ knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
   comment = "#>",
-  width = 60
+  width = 60,
+  cache=TRUE,
+  root.dir = "./data"
 )
 set.seed(2024)
 ```
@@ -32,14 +36,14 @@ Single-cell annotation is the key step in scRNA-seq analysis to reveal the heter
 
 <br>
 
-## Preparation and assumed knowledge
+<span class="fa-stack fa"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i></span> **Preparation and assumed knowledge**
 
 - [Use of dimensionality reduction in single-cell genomics](https://doi.org/10.1371/journal.pcbi.1011288)
 - [scClassify](https://doi.org/10.15252/msb.20199389)
 
 <br>
 
-## Learning objectives
+<span class="fa-stack fa"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-location-arrow fa-stack-1x fa-inverse"></i></span> **Learning objectives**
 
 - Apply different dimensionality reduction techniques and customise the visualisation
 - To perform unsupervised and supervised procedures to annotate cell types in scRNA-seq data
@@ -100,9 +104,8 @@ library(DT)
 theme_set(theme_bw())
 ```
 
-```{r}
-data_path <- system.file("data", "hippocampus_processed.rda", package = "SCMultiomeCNRSR")
-load(file=data_path)
+```{r cache=FALSE}
+load(file="../data/hippocampus_processed.rda")
 sce <- hippocampus_processed
 rm(hippocampus_processed)
 ```
@@ -149,7 +152,7 @@ seu <- ScaleData(seu, verbose = FALSE, do.scale = TRUE, do.center = FALSE)
 
 Principal Component Analysis (PCA) is a statistical technique to transform high dimensionality data into low dimensionality data whilst retaining the variability of the data into Principal Components (PCs). It is typically performed prior to running any other dimensionality reduction technique as algorithms such as t-SNE and UMAP are computationally intensive, this reduces the computational load and memory required whilst optimizing the performance. 
 
-```{r}
+```{r cache=FALSE}
 seu <- RunPCA(seu, verbose = FALSE)
 seu <- RunTSNE(seu, reduction = "pca", perplexity=200)
 seu <- RunUMAP(seu, reduction = "pca", dims = 1:15, min.dist = 0.5)
@@ -174,12 +177,12 @@ patchwork::wrap_plots(list(p1, p2, p3, p4, p5, p6), nrow=2, guides="collect")
 + What happens to the visualisations when you change the TSNE perplexity parameter?
 + What happens to the visualisations when you change the UMAP min.dist parameter?
 
-```{r fig.height=6}
+```{r fig.height=6, cache=FALSE}
 tmp <- RunTSNE(seu, reduction = "pca", reduction.name = "tsne", perplexity=100)
 DimPlot(tmp, reduction = "tsne", group.by = "age")
 ```
 
-```{r fig.height=6}
+```{r fig.height=6, cache=FALSE}
 tmp <- RunUMAP(seu, reduction = "pca", reduction.name = "umap", dims = 1:15, min.dist = 0.7)
 DimPlot(tmp, reduction = "umap", group.by = "age")
 ```
@@ -204,14 +207,17 @@ p3 <- DimPlot(seu, reduction = "umap", group.by = "age", split.by = "age") + ggt
 patchwork::wrap_plots(list(p1, p2, p3), nrow=1, guides="collect")
 ```
 
-Since we know the number of cell types expected, for the purpose of this tutorial, we will set a resolution parameter that gives us a similar number of clusters equal to unique cell types. 
+Since we know the number of cell types expected, for the purpose of this tutorial, we will set a resolution parameter that gives us a similar number of clusters equal to unique cell types.
 
-**Questions:**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 + What does the resolution parameter do?
 + How do we choose the right resolution?
 
-```{r}
+```{r cache=FALSE}
 seu <- FindNeighbors(seu, dims = 1:10)
 seu <- FindClusters(seu, resolution = 0.1)
 ```
@@ -220,7 +226,10 @@ seu <- FindClusters(seu, resolution = 0.1)
 
 Then, once we have generated the unique clusters, we can annotate the data using known marker genes.
 
-**Questions**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 + How do you think the unsupervised clustering performed?
 
@@ -240,7 +249,10 @@ Here are some known marker genes of the cell types we expect in the data:
 
 Feel free to visualise different marker genes to visualise the distribution of the gene expression across cells.
 
-**Questions**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 + What parameter would you change in `FeaturePlot` to view the data by age?
 + Do you think these marker genes are informative to identify the specific cell types?
@@ -256,13 +268,12 @@ Alternatively, we can use the cluster assignments and perform differential expre
 As this step takes a few minutes, we can load in the pre-calculated results.
 
 ```{r}
-data_path <- system.file("data", "cluster1.markers_RNA_snn_res.0.1.rda", package = "SCMultiomeCNRSR")
-
-if(!file.exists(data_path)) {
+if(!file.exists("../data/cluster1.markers_RNA_snn_res.0.1.rda")) {
   cluster1.markers <- FindMarkers(seu, ident.1 = 1, test.use = "wilcox", min.pct=0.01)
-  save(cluster1.markers, file=data_path)
+  save(cluster1.markers, file="data/cluster1.markers_RNA_snn_res.0.1.rda")
+  
 } else {
-  load(file=data_path)
+  load(file="../data/cluster1.markers_RNA_snn_res.0.1.rda")
   cluster1.markers <- cluster1.markers_RNA_snn_res.0.1
 }
 
@@ -270,7 +281,10 @@ pos_only <- cluster1.markers %>%
   dplyr::filter(avg_log2FC > 1)
 ```
 
-**Questions**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 + What do the top markers tell you about the identity of this cluster?
 
@@ -310,7 +324,10 @@ ggplot(plot_data, aes(x = res, y = value, fill = res)) +
   theme(legend.position = "none")
 ```
 
-**Discussion**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 + What are additional visualisations can we use to determine the annotations by marker gene expression?
 
@@ -320,7 +337,10 @@ ggplot(plot_data, aes(x = res, y = value, fill = res)) +
 
 Once we have identified the cell types, often it is of interest to visualise the cell type proportions across conditions (ie. age).
 
-**Questions**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 + Why is it useful to visualise both the absolute counts and the proportions?
 
@@ -374,7 +394,7 @@ table(cellTypes_train)
 
 We first perform non-ensemble scClassify by using 70% data as our reference dataset. We use `WKNN` as the KNN algorithm, `DE` (differential expression genes) as the gene selection method. As per our previous study, we found Pearson correlation to be the optimal similarity metric for comparing single cell RNA-seq data ([Kim et al., 2018](https://doi.org/10.1093/bib/bby076), thus we choose pearson as the similarity calculation method.
 
-```{r}
+```{r cache=FALSE}
 train_scClassify <- scClassify::train_scClassify(exprsMat_train = train, 
                                            cellTypes_train = cellTypes_train,
                                            algorithm = "WKNN",
@@ -394,7 +414,7 @@ scClassify::plotCellTypeTree(train_scClassify@cellTypeTree, group_level = 3)
 
 Next, we perform `predict_scClassify()` with our trained model `trainRes = train_scClassify` to predict the cell types of our query data matrix `test`. 
 
-```{r}
+```{r cache=FALSE}
 pred_res <- scClassify::predict_scClassify(exprsMat_test = test,
                                cellTypes_test = cellTypes_test,
                                trainRes = train_scClassify,

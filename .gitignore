@@ -1,5 +1,10 @@
+# R related files
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
-docs
+
+# Vignettes output
+vignettes/*.html
+vignettes/*_cache/
+vignettes/*_files/
