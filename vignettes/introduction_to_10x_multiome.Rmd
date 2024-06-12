@@ -1,0 +1,700 @@
+---
+title: "Introduction to 10x Multiome"
+author: Siqu Long^[siqu.long@sydney.edu.au]
+        Carissa Chen^[cchen@uni.sydney.edu.au]
+        Pengyi Yang^[pengyi.yang@sydney.edu.au]
+bibliography: ref.bib
+link-citation: true
+output:
+  html_document:
+    code_folding: show
+    number_sections: yes
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Introduction to 10x Multiome}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "#>",
+  width = 60
+)
+set.seed(2024)
+```
+
+# Overview
+Single-cell RNA sequencing is an effective method for analyzing the characteristics and dynamics in tissues in both healthy and diseased states. Nonetheless, to gain a comprehensive understanding of cellular conditions during illness or treatment, it can be beneficial to collect information beyond just the gene expression profile of a cell and turns to multimodal single-cell analysis. Single-cell multi-omics technologies concurrently combines different single-modality omics methods that profile the transcriptome, genome, epigenome, epitranscriptome, proteome, metabolome, and other (emerging) omics [@multiometech], which provides a comprehensive view and detailed characterization of individual cell states and activities. 
+
+In our previous tutorial, we learned the workflow of multimodal single-cell omics analysis with the CITE-seq data, which combines scRNA-seq with antibody-derived tags to measure protein levels on the cell surface. In this tutorial, let's move to another commonly applied multiome data that is derived from simultaneous profiling of the transcriptome (scRNA-seq) and chromatin accessibility (scATAC-seq). 
+
+ 
+## <span class="fa-stack fa"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i></span> Preparation and assumed knowledge
+- Knowledge of R syntax [Basic tutorials of R](https://www.w3schools.com/r/default.asp)
+- Basic knowledge in [single cell data analysis](https://bioconductor.org/books/release/OSCA/index.html) 
+- Familiarity with the [Seurat class](https://satijalab.org/seurat/articles/get_started_v5_new)
+
+## <span class="fa-stack fa"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-location-arrow fa-stack-1x fa-inverse"></i></span> Learning objectives
+
+- Get familiar with the concepts of RNA + ATAC multiomic sequencing and analysis
+- Understand the 10x multiome data
+- Learn about the common practices of preprocessing the RNA + ATAC multiomic data, using the 10x multiome sample data
+- Prepare the RNA + ATAC data for multiomic integrative analysis using Matilda
+
+
+
+<br><br>
+
+## Schedule
+
+Structure of this section:
+
+| Activity                                             | Time |
+|------------------------------------------------------|------|
+| 1 Overview                                           |  5m  |
+| 2 Hello, 10x Multiome!                               | 15m  |
+| 3 Preparation required data files                    |  5m  |
+| 4 Data preprocessing and analysis                    | 30m  |
+| 5 Integrative analysis with Matilda                  |  5m  |
+
+
+
+# Hello, 10x Multiome!
+The **10x Genomics' Single Cell Multiome ATAC + Gene Expression solution (10x Multiome)** is one of the dominant technology for combining the scRNA-seq and scATAC-seq. It integrates single-cell RNA sequencing (scRNA-seq) with a single-cell epigenetic readout in the form of chromatin accessibility profiling with single-cell ATAC-seq (scATAC-seq). With the joint profiling of RNA and ATAC, it connects information on the activity of regulatory elements to gene expression data in the same nucleus, which establishes a direct one-to-one connection between gene expression and epigenetic programs that are not capturable otherwise. 
+
+
+
+Figure 1 provides an overview of the 10x Multiome workflow. In summary, Nuclei isolation is followed by "tagmentation" with Tn5 transposase, which fragments open chromatin and tags DNA with adapters for 10x Barcodes. The nuclei are then added to the 10x Chromium X, where specialized Next GEM beads capture adapters and mRNAs, adding cell- and molecule-specific barcodes. The mixture is then extracted, pooled, and undergoes library preparation, including amplification and cleanup, which can be then used for the next-generation sequencing. More details with step-by-step explanation can be found in the optional reading below.
+
+
+```{r, echo=FALSE, out.width="98%", fig.align='center', fig.cap="Figure 1. 10x Multiome workflow. The paired ATAC and gene expression libraries are generatred from the isolated nuclei, which are then sequenced. (Source: 10x Genomics)"}
+knitr::include_graphics("figures/workflow.png")
+
+```
+
+<details>
+<summary>***(Optional Reading) How is the 10x multiome (RNA + ATAC) data profiled and prepared exactly?***</summary>
+<br/>
+Specifically, the 10x Multiome combines the pre-existing scRNA-seq with a scATAC-seq technology, namely 10x Genomics' (3') Chromium Single Cell Gene Expression ([Click to see the workflow](https://www.scdiscoveries.com/blog/knowledge/single-cell-transcriptomics/#how-it-works)), and Chromium Single Cell ATAC ([Click to see the workflow](https://www.scdiscoveries.com/blog/knowledge/how-scatac-seq-works/#the-method)). According to the [user guide for the 10x Multiome](https://assets.ctfassets.net/an68im79xiti/7x5E4P6xefQruTbFg0yr3a/1381fdcd2d2e7d667ef5b415119dab15/CG000338_ChromiumNextGEM_Multiome_ATAC_GEX_User_Guide_RevE.pdf#page=32.10), it mainly consists of the following 8 steps to acquire the scRNA+scATAC data:
+
+
+**Step 1. Transposition**
+Nuclei suspensions are incubated in a Transposition Mix that includes a Transposase. The Transposase enters the nuclei and preferentially fragments the DNA in open regions of the chromatin. Simultaneously, adapter sequences are added to the ends of the DNA fragments.
+
+
+
+**Step 2. GEM Generation & Barcoding**
+Similar to the aforementioned 10x Genomics' (3') Chromium Single Cell Gene Expression and Chromium Single Cell ATAC workflows, 10x Multiome also relies on the next GEMs (Gel bead-in-EMulsion) in the Chromium X. As is shown in the Figure 2 below, in the 10x Multiome protocol, the Gel bead include (1) a poly(dT) sequence that enables production of barcoded, full-length cDNA from poly-adenylated mRNA for gene expression (GEX) library, and (2) a Spacer sequence that enables barcode attachment to transposed DNA fragments for ATAC library. 
+
+```{r, echo=FALSE, out.width="70%", fig.align='center', fig.cap="Figure 2. Two types of oligos line a 10x Multiome bead. One contains a poly(dT)VN to bind Poly(A) tails of mRNA transcripts, another a spacer that binds the Tn5-adapted DNA fragments of the scATAC library. (Source: 10x Genomics)"}
+knitr::include_graphics("figures/10x_gem_multi.png")
+
+```
+
+GEMs are generated by combining barcoded Gel Beads, transposed nuclei, a Master Mix, and Partitioning Oil on a Chromium Next GEM Chip J (See Figure 3 below). 
+
+```{r, echo=FALSE, out.width="50%", fig.align='center', fig.cap="Figure 3. GEM generation protocol. To achieve single nuclei resolution, the nuclei are delivered at a limiting dilution, such that the majority (~90-99%) of generated GEMs contains no nuclei, while the remainder largely contain a single nucleus. (Source: 10x Genomics)"}
+knitr::include_graphics("figures/gem.png")
+
+```
+
+Upon GEM generation, the Gel Bead dissolves, releasing oligonucleotides containing an Illumina® P5 sequence, a 16 nt 10x Barcode (for ATAC), and a Spacer sequence. In the same partition, primers with an Illumina® TruSeq Read 1, a 16 nt 10x Barcode (for GEX), a 12 nt unique molecular identifier (UMI), and a 30 nt poly(dT) sequence are also released. These primers mix with the nuclei lysate containing transposed DNA fragments, mRNA, and Master Mix, which includes reverse transcription (RT) reagents.
+
+Incubation of the GEMs, as is shown in Figure 4 below, produces 10x Barcoded DNA from the transposed DNA (for ATAC) and 10x Barcoded, full-length cDNA from poly-adenylated mRNA (for GEX). This is followed by a quenching step that stops the reaction.
+
+```{r, echo=FALSE, out.width="90%", fig.align='center', fig.cap="Figure 4. What is happening during the incubation inside individual GEMs. (Source: 10x Genomics)"}
+knitr::include_graphics("figures/insidegem.png")
+
+```
+
+
+**Step 3. Post-GEM Cleanup**
+After the GEMs incubation, the GEMs are broken and pooled fractions are recovered. Silane magnetic beads are used to purify the cell barcoded products from the post GEM-RT reaction mixture, which includes leftover biochemical reagents and primers.
+
+**Step 4. Pre-Amplification PCR**
+Barcoded transposed DNA and barcoded full length cDNA from poly-adenylated mRNA are amplified via PCR to fill gaps and for generating sufficient mass for library construction (See Figure 5). The pre-amplified product is used as input for both ATAC library construction and cDNA amplification for gene expression library construction.
+
+```{r, echo=FALSE, out.width="70%", fig.align='center', fig.cap="Figure 5. Pooled pre-amplification PCR. (Source: 10x Genomics)"}
+knitr::include_graphics("figures/amplification.png")
+
+```
+
+**Step 5. ATAC Library Construction**
+P7 and a sample index are added to pre-amplified transposed DNA during ATAC library construction via PCR. The final ATAC libraries contain the P5 and P7 sequences used in Illumina® bridge amplification (See Figure 6).
+
+```{r, echo=FALSE, out.width="50%", fig.align='center', fig.cap="Figure 6. ATAC library construction. (Source: 10x Genomics)"}
+knitr::include_graphics("figures/ataclib.png")
+
+```
+
+**Step 6. GEM cDNA Aplification**
+Barcoded, full-length pre-amplified cDNA is amplified via PCR to generate sufficient mass for gene expression library construction.
+
+**Step 7. Gene Expression Library Construction**
+Enzymatic fragmentation and size selection are used to optimize the cDNA amplicon size. P5, P7, i7 and i5 sample indexes, and TruSeq Read 2 (read 2 primer sequence) are added via End Repair, A-tailing, Adaptor Ligation, and PCR. The final gene expression libraries contain the P5 and P7 primers used in Illumina® bridge amplification (See Figure 7).
+
+```{r, echo=FALSE, out.width="50%", fig.align='center', fig.cap="Figure 7. cDNA amplification & gene expression library construction. (Source: 10x Genomics)"}
+knitr::include_graphics("figures/rnalib.png")
+
+```
+
+**Step 8. Sequencing**
+As is demonstrated in Figure 8, Chromium Single Cell Multiome ATAC libraries comprise double stranded DNA with standard Illumina® paired-end constructs which begin with P5 and end with P7. Sequencing these libraries produces a standard Illumina® BCL data output folder that includes paired-end Read 1N and Read 2N used for sequencing the DNA insert, along with the 8 bp sample index in the i7 read and 16 bp 10x Barcode sequence in the i5 read
+.
+
+```{r, echo=FALSE, out.width="70%", fig.align='center', fig.cap="Figure 8. Chromium Single Cell Multiome ATAC library.  (Source: 10x Genomics)"}
+knitr::include_graphics("figures/seq1.png")
+
+```
+
+As is illustrated in Figure 9, Chromium Single Cell Multiome Gene Expression libraries comprise cDNA insert with standard Illumina® paired-end constructs which begin with P5 and end with P7. Sequencing these libraries produces a standard Illumina® BCL data output folder. TruSeq Read 1 is used to sequence 16 bp 10x Barcodes and 12 bp UMI, while 10 bp i5 and i7 sample index sequences are the sample index reads. TruSeq Read 2 is used to sequence the insert.
+
+```{r, echo=FALSE, out.width="70%", fig.align='center', fig.cap="Figure 9. Chromium Single Cell Multiome Gene Expression library. (Source: 10x Genomics)"}
+knitr::include_graphics("figures/seq2.png")
+
+```
+
+</details>
+
+<br/><br/>
+After sequencing, the sequencer outputs are processed and pre-analyzed by the [Cell Ranger ARC pipelines](https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/pipelines/latest/what-is-cell-ranger-arc) from 10x Genomics. In the following sections, we will learn how to load the RNA and ATAC data from the serious output files from Cell Ranger. 
+
+# Preperation required data files
+In this section, we first prepare our sample 10x multiome data. We will use the PBMC multiome dataset publicly available from [10x genomics](https://support.10xgenomics.com/single-cell-multiome-atac-gex/datasets/1.0.0/pbmc_granulocyte_sorted_10k). This PBMCs is from a healthy female donor aged 25 and were obtained by 10x Genomics from AllCells. In this dataset, scRNA-seq and scATAC-seq profiles were simultaneously collected in the same cells. From the [dataset introduction site](https://support.10xgenomics.com/single-cell-multiome-atac-gex/datasets/1.0.0/pbmc_granulocyte_sorted_10k), we can see that a series of output files from the Cell Ranger are available (See Figure 10 below). A detailed introduction for each of the file can be found from the [Cell Ranger guide](https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/pipelines/latest/output/overview). 
+
+```{r, echo=FALSE, out.width="70%", fig.align='center', fig.cap="Figure 10. Output files of our sample data available for download. (Source: 10x Genomics)"}
+knitr::include_graphics("figures/outputs.png")
+
+```
+
+
+
+Here, our goal is to derive the RNA and ATAC matrix. We will only focus on the following three files:
+
+- `pbmc_granulocyte_sorted_10k_filtered_feature_bc_matrix.h5`: The filtered feature barcode matrix (HDF5). The rows represent features, genes and peaks detected, while the columns consist of all cell-associated barcodes.
+
+- `pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz`: The ATAC Per fragment information file (TSV.GZ). It contains one line per unique fragment with tab-separated fields, including the reference genome chromosome of fragment (`chrom`), the adjusted start and end position of fragment on chromosome (`chromStart`, `chromEnd`), the 10x barcode of the fragment (`barcode`), and the total number of read pairs associated with this fragment (`readSupport`). 
+
+- `pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz.tbi`: The ATAC Per fragment information index (TSV.GZ index). It is a [tabix](http://www.htslib.org/doc/tabix.html) index of the fragment intervals facilitating random access to records from an arbitrary genomic interval. 
+
+
+To facilitate easy loading and exploration, we pre-downloaded the three files already. You can find them in the `data` folder. However, you can also download these required data by yourself later via running the following lines in a shell.
+
+<details>
+<summary>***(Optional) Downloading the data yourself***</summary>
+```{bash, echo=TRUE, eval=FALSE, class.source = "fold-show"}
+wget https://cf.10xgenomics.com/samples/cell-arc/1.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_filtered_feature_bc_matrix.h5
+wget https://cf.10xgenomics.com/samples/cell-arc/1.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz
+wget https://cf.10xgenomics.com/samples/cell-arc/1.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz.tbi
+```
+
+</details>
+
+
+# Data preprocessing and analysis
+Now we have data files ready! In the following sections, we will prepare the matrix data in R and conduct some essential data preprocessing and analysis. We will mostly follow the common practice of joint RNA and ATAC analysis introduced by [Signac](https://stuartlab.org/signac/articles/pbmc_multiomic). 
+
+## Load libraries
+Before getting start, let us load some of the R libraries we will use. 
+```{r message = FALSE}
+library(ggplot2)
+library(Signac)
+library(Seurat)
+library(EnsDb.Hsapiens.v86) # get gene annotations for hg19 for creating the ATAC assay
+library(SeuratDisk) # for load the annotated pbmc reference dataset
+library(BSgenome.Hsapiens.UCSC.hg38)
+```
+
+
+
+## Data preperation
+With the three required files, we can easily create a Seurat object based on the gene expression data, and then add in the ATAC-seq data as a second assay. First, let us load the read count matrix from 10X CellRanger hdf5 file into R, using the `Read10x_H5` function from `Seurat`. This will give us the access to both RNA data (`Gene Expression`) and ATAC data matrix (`Peaks`).
+
+
+```{r}
+# This will give us both the RNA and ATAC matrix data, named as 'Gene Expression' and 'Peaks' respectively.
+counts <- Read10X_h5("data/pbmc_granulocyte_sorted_10k_filtered_feature_bc_matrix.h5")
+```
+
+
+<br/>
+Now, we can create a `Seurat` object named `pbmc` and initialize it with the RNA data matrix.
+```{r}
+# create a Seurat object containing the Gene Expression matrix
+pbmc <- CreateSeuratObject(
+  counts = counts$`Gene Expression`,
+  assay = "RNA"
+)
+```
+
+
+<br/>
+We are already familiar with the RNA cell by feature matrix (`Gene Expression`). Let's have a look at how the ATAC data matrix (`Peaks`) looks like. As can be seen in the first 10 rows by first 10 columns of the `Peaks` matrix below, it is a sparse matrix with non-zero values stored only. It looks much like the scRNA-seq cell by feature count matrix. The major difference is the features (row names) are not genes but the regions of the peaks that are predicted to be open chromatin by the peak callers. The non-zero values stored in matrix represents the number of tn5 integration site in each of the cell (column) that maps to each region (row). 
+
+```{r}
+counts$Peaks[1:10,1:10]
+```
+
+
+<br/>
+For creating the chromatin assay object, we also need information from the other two files: the ATAC Per fragment information file and the ATAC Per fragment information index. We will store the created ATAC assay in the `pbmc` object as a secondary assay. Note that in the following code, we also add gene annotations to the ATAC assay object for the human genome. This allows downstream functions to pull the gene annotation information directly from the object.
+
+<details>
+<summary>***What does the fragment file look like?***</summary>
+<br/>
+As is introduced above, the ATAC Per fragment information file (TSV.GZ) contains one line per unique fragment with tab-separated fields, including the reference genome chromosome of fragment (`chrom`), the adjusted start and end position of fragment on chromosome (`chromStart`, `chromEnd`), the 10x barcode of the fragment (`barcode`), and the total number of read pairs associated with this fragment (`readSupport`). Let's read the fragment file and see what do these values actually look like:
+
+```{r}
+# read file (only read 10 rows)
+fragpath <- "data/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz"
+frag.file <- read.delim(fragpath, header=F, nrows = 10)
+# change the column names 
+colnames(frag.file) <- c('chrom','chromStart','chromEnd','barcode','readSupport')
+# preview of the file content
+head(frag.file)
+```
+
+</details>
+
+```{r, warning=FALSE}
+# specifying the path to the fragment information file
+fragpath <- "data/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz"
+
+# convert EnsDb (Ensembl database) to GRanges object 
+annotation <- GetGRangesFromEnsDb(ensdb = EnsDb.Hsapiens.v86)
+# convert to UCSC style by adding the 'chr' prefix
+seqlevels(annotation) <- paste0('chr', seqlevels(annotation))
+
+# create ATAC assay from the 'Peaks' matrix and add it to the object, together with the gene annotation
+pbmc[["ATAC"]] <- CreateChromatinAssay(
+  counts = counts$Peaks,
+  sep = c(":", "-"),
+  fragments = fragpath,
+  annotation = annotation # store the gene annotation information
+)
+```
+
+<br/>
+<details>
+<summary>***What does the annotation look like?***</summary>
+<br/>
+As can be seen from the output below, the `annotation` object extracts the Exon and the coding region information from the transcripts across the genes across all the chromosomes along with the strand and the genomic location. 
+
+```{r}
+annotation
+```
+
+</details>
+
+
+Specifically, the `ChromatinAssay` used above for storing the ATAC data enables some specialized functions for analysing genomic single-cell assays such as scATAC-seq. By printing the assay we can see some of the additional information that can be contained in the `ChromatinAssay`, including motif information, gene annotations, and genome information. The detailed instruction on how to access these information stored in a `ChromatinAassay` object can be found from [Signac](https://stuartlab.org/signac/articles/data_structures#the-chromatinassay-class).
+
+```{r}
+pbmc[["ATAC"]]
+```
+
+## Quality control
+As is done in our previous tutorials for scRNA-seq, we need to perform the quality control by assessing the quality of the data and filtering the poor quality cells. Here, we will compute and look at the per-cell quality control metrics using the DNA accessibility data and remove cells that are outliers for these metrics, as well as cells with low or unusually high counts for either the RNA or ATAC assay. The [NucleosomeSignal](https://stuartlab.org/signac/reference/nucleosomesignal) function below calculates the strength of the nucleosome signal per cell. It computes the ratio of fragments between 147 bp and 294 bp (mononucleosome) to fragments < 147 bp (nucleosome-free). The [TSSEnrichment](https://stuartlab.org/signac/reference/tssenrichment) function computes the transcription start site (TSS) enrichment score for each cell. 
+
+
+
+
+<br/>
+<details>
+<summary>***Question: What are the nucleosome signal and transcription start site (TSS) enrichment score? How to utilize it to control the quality of the DNA accessibility data? ***</summary>
+
+</br>
+***Nucleosome signal*** calculates the ratio of mononucleosome (fragments with length between 147 bp and 294 bp) to nucleosome-free regions (fragments with length less than 147 bp) by looking at the distribution of DNA fragment lengths from the cell. Considering the aim of scATAC-seq, we essentially want to retain only those fragments that are not bound by the mononucleosomes, which are free of nucleosomes and open and accessible for the other DNA binding proteins to bind to these DNA. Thus, cells with lower nucleosome signal indicates that it has enrichment of fragments that are not bound by nucleosomes. 
+
+***Transcription start site (TSS) enrichment score*** The transcription start site (TSS) enrichment score was originally defined by the ENCODE consortium [@encode] as a signal-to-noise metric for ATAC-seq experiments. The idea is that if these fragments are from open chromatin region that is not bound by any nucleosome, the genes in this region will be actively transcribed or regulated. Therefore, these nucleosome-free regions should be expected to be enriched around the transcription start site of these genes. The enrichment score is calculated by taking a ratio of the fragments centered at the transcription start site over the fragments in the TSS flanking regions that is around the TSS regions. With regards to the scATAC-seq, we ideally want to retain those cells that have a high transcription start site enrichment score. 
+
+We can see from the above that the nucleosome signal and transcription start site enrichment score are two complementary metrics for measuring the amount of potential nucleosome-free fragments contained by the cells in the scATAC-seq data. 
+
+</details>
+
+```{r}
+DefaultAssay(pbmc) <- "ATAC"
+
+# Calculate the strength of the nucleosome signal per cell
+pbmc <- NucleosomeSignal(pbmc)
+pbmc <- TSSEnrichment(pbmc)
+# We can see where these calculated results are stored in our meta.data
+colnames(pbmc@meta.data)[1:10]
+```
+
+
+<br/>
+The relationship between variables stored in the object metadata can be visualized using the [DensityScatter](https://stuartlab.org/signac/reference/densityscatter) function from Signac. This can also be used to quickly find suitable cutoff values for different QC metrics by setting `quantiles=TRUE`:
+
+```{r}
+DensityScatter(pbmc, x = 'nCount_ATAC', y = 'TSS.enrichment', log_x = TRUE, quantiles = TRUE)
+```
+
+<br/>
+For the scatter plot generated above, the x-axis represents the number of counts whereas the y-axis is the TSS enrichment score. Each cell is colored by the density of points. We can see there are some red lines going across the plots both vertically and horizontally. The vertical red lines are the 5th quantile, 10th quantile, 90th quantile and 95th quantile of the `nCount` while their corresponding values can be found at the top of the plot. Similarly, the horizontal red lines are the quantiles for the TSS enrichment score. By visualizing data in this way, it helps us come up with filtering thresholds to ensure that we are not choosing a threshold that is too stringent that majority of our cells are filtered out and at the same time selecting a threshold that retains high quality of cells. 
+
+
+Similarly, we can create the scatter plot with the nucleosome signal as well.
+
+```{r}
+DensityScatter(pbmc, x = 'nCount_ATAC', y = 'nucleosome_signal', log_x = TRUE, quantiles = TRUE)
+```
+
+
+
+<br/>
+Also, we can plot the distribution of each QC metric in violin plot using the [VlnPlot](https://satijalab.org/seurat/reference/vlnplot) function from Seurat. We can simply choosing which features (metrics) to be plotted by changing the input to the `features` parameter. In the example below, we will plot the distribution of RNA read counts (`nCount_RNA`), the ATAC peak counts (`nCount_ATAC`), the TSS enrichment score (`TSS.enrichment`) and the nucleosome signal (`nucleosome_signal`). This can be another visualization for helping us deciding the proper thresholds. 
+
+```{r}
+
+VlnPlot(
+  object = pbmc,
+  features = c("nCount_RNA", "nCount_ATAC", "TSS.enrichment", "nucleosome_signal"),
+  ncol = 4,
+  pt.size = 0
+)
+
+```
+
+
+<br/>
+Now, based on our QC above, we can decide the thresholds for filtering the low quality cells. Here, we will keep cells with number of ATAC peak counts between 1800 and 100k, number of RNA read counts between 1k and 25k, the strength of the nucleosome signal smaller than 2, and the TTS enrichment score greater than 1. 
+
+```{r}
+# filter out low quality cells
+pbmc <- subset(
+  x = pbmc,
+  subset = nCount_ATAC < 100000 &
+    nCount_RNA < 25000 &
+    nCount_ATAC > 1800 &
+    nCount_RNA > 1000 &
+    nucleosome_signal < 2 &
+    TSS.enrichment > 1
+)
+pbmc
+```
+
+
+<br/>
+<details>
+<summary>***Question: How will you decide the thresholds for cut-offs?***</summary>
+<br/>
+It is important to keep in mind, as with scRNA-seq we introduced in our previous tutorial (Introduction to Single-cell), all these cut-offs vary depending on your biological system, cell viability, and other factors. In some cases, you may want to set lower or more stringent thresholds to avoid removing rare cell populations or to capture cell types which may have specific characteristics. 
+
+In our previous tutorial (Introduction to Single-cell), we have walked through the detailed QC procedure for scRNA-seq data. *Can you still recall what they are?* In the current tutorial section, we introduced another two scATAC-seq based QC metrics, which can help us filtering the low quality cells from the perspective of the DNA accessibility data. More scATAC-seq QC metrics can be found from the Computing QC Metrics section in [Signac](https://stuartlab.org/signac/articles/pbmc_vignette.html#computing-qc-metrics).
+</details>
+
+
+## Gene expression data processing
+We can normalize the gene expression data using [SCTransform](https://satijalab.org/seurat/reference/sctransform), and reduce the dimensionality using [runPCA](https://satijalab.org/seurat/reference/runpca). Try to recall that, in our previous tutorial (Basics of Single-celll Annotation, Section 4), we learned to use the `NormalizeData`, `FindVariableFeatures` and `ScaleData`. The `SCTransform` function works as an alternative to these three forementioned functions. The results are saved in a new assay (named `SCT` by default) with `counts` being (corrected) counts, `data` being log1p(counts), `scale.data` being pearson residuals.
+```{r, results='hide'}
+DefaultAssay(pbmc) <- "RNA"
+pbmc <- SCTransform(pbmc)
+pbmc <- RunPCA(pbmc)
+```
+
+## DNA accessibility data processing
+Then, we process the DNA accessibility assay the same way we would process a scATAC-seq dataset, by using the [RunTFIDF](https://stuartlab.org/signac/reference/runtfidf) and [RunSVD](https://stuartlab.org/signac/reference/runsvd). By running both, the resulted dimension reduction object will be stored as `lsi`.
+```{r, results='hide'}
+DefaultAssay(pbmc) <- "ATAC"
+pbmc <- RunTFIDF(pbmc) # TF-IDF normalization
+pbmc <- FindTopFeatures(pbmc, min.cutoff = 5) # selecting the top features (with the minimum number of counts for the feature to be included set to be 5)
+pbmc <- RunSVD(pbmc) # dimension reduction
+
+# RunTFIDF + RunSVD above performs the Latent Semantic Indexing (LSI), which is a dimension reduction method that uses term frequency inverse document frequency transformation (TFIDF) followed by singular value decomposition (SVD).
+```
+
+
+## Annotating cell types using Seurat
+As is learned from our previous tutorial (Basics of Single-cell Annotation), single-cell annotation is the key step in scRNA-seq analysis to reveal the heterogeneity present in the data for further downstream analyses to characterise the specific cell type differences. It is exactly the same case for multiomic data. In this section, we will use another annotation method called label transfer, by which we can transfer/map cell labels from an existing PBMC dataset (which has been already annotated), namely reference dataset, to our own dataset, namely query dataset. Specifically, we will use tools in Seurat package to do this. The detailed vignettes for multimodal reference mapping can be found from [Seurat](https://satijalab.org/seurat/v4.0/reference_mapping.html).
+
+Here, we use an annotated PBMC dataset as our reference dataset from [Hao et al. (2020)](https://www.biorxiv.org/content/10.1101/2020.10.12.335331v1), available for download [here](https://atlas.fredhutch.org/data/nygc/multimodal/pbmc_multimodal.h5seurat). We also pre-downloaded this h5Seurat file for saving some time. We can load it directly using the [LoadH5Seurat](https://mojaveazure.github.io/seurat-disk/reference/LoadH5Seurat.html) function from the `SeuratDisk` library. From the output blow, we can see that this reference dataset has been already normalized using the [SCTransform](https://satijalab.org/seurat/reference/sctransform) and the dimension reduction is available as `spca`, which is a precomputed supervised PCA (spca) transformation recommended in their [manuscript](https://www.cell.com/cell/fulltext/S0092-8674(21)00583-3?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS0092867421005833%3Fshowall%3Dtrue).
+
+```{r, results='hide'}
+# load PBMC reference, the LoadH5Seurat function is from the SeuratDisk package, which can load a saved Seurat object from an h5Seurat file.
+reference <- LoadH5Seurat("data/pbmc_multimodal.h5seurat", assays = list("SCT" = "counts"), reductions = 'spca')
+reference <- UpdateSeuratObject(reference) # update old seurat object to accommodate new features
+reference
+```
+
+<br/>
+We then find anchors between reference and query using the [FindTransferAnchors](https://satijalab.org/seurat/reference/findtransferanchors) from Seurat. 
+
+```{r, warning=FALSE}
+DefaultAssay(pbmc) <- "SCT" # Normalized assay
+
+# find a set of anchors between a reference and query object. 
+# these anchors can later be used to transfer data from the reference to query object
+transfer_anchors <- FindTransferAnchors(
+  reference = reference,
+  query = pbmc,
+  normalization.method = "SCT", # name of the normalization method used is SCT
+  reference.reduction = "spca", # name of dimensional reduction to use from the reference
+  recompute.residuals = FALSE,
+  dims = 1:50 # which dimensions to use from the reduction to specify the neighbor search space
+)
+
+```
+
+<br/>
+With the anchor found, we can easily transfer the labels from the reference data to our query data using the [TransferData](https://satijalab.org/seurat/reference/transferdata) from Seurat. The transferred results are stored in the `prediction` variable. From the output below, we can see that `prediction` has the same rows corresponding to our pbmc data matrix while having 33 columns regarding the label transfer, including the final transferred label (`predicted.id`), the maximum prediction score of the label transfer (`prediction.score.max`) and the prediction score for each type of cell types (`prediction.score.xxx`).
+
+```{r}
+# transfer cell type labels from reference to query
+predictions <- TransferData(
+  anchorset = transfer_anchors, # the anchors we derive from the FindTransferAnchors above
+  refdata = reference$celltype.l2, # meta data to be transferred from reference data to query data
+  weight.reduction = pbmc[['pca']], # dimensional reduction to use for the weighting anchors
+  dims = 1:50 # set of dimensions to use in the anchor weighting procedure
+)
+
+print(dim(predictions))
+print(colnames(predictions))
+```
+
+<br/>
+After the label transfer, we can add the transfer results (`predictions`) to the meta data of our `pbmc` object. Also, we filter out those low quality prediction results based on the maximum prediction score.
+
+```{r}
+
+# add the label transfer results to meta data of pbmc object
+pbmc <- AddMetaData(
+  object = pbmc,
+  metadata = predictions
+)
+
+# remove low-quality predictions using threshold of 0.5
+pbmc <- pbmc[, pbmc$prediction.score.max > 0.5]
+
+dim(pbmc)
+```
+
+
+## Joint UMAP visualization with cell type annoation
+Now, similar to what we've done with the scRNA-seq in our previous tutorials, let's try to run UMAP and visualize it with the cell type annotation we just derived. The major difference here is that we have two modalities: RNA and ATAC. One simple and straightforward way is to run UMAP on each single modality and visualize separately. Alternatively, we can also build a joint UMAP visualization on both modalities. In order to do that, we will use the weighted nearest neighbor (WNN) methods in [Seurat v4](https://www.biorxiv.org/content/10.1101/2020.10.12.335331v1) to compute a joint neighbor graph that represent both the gene expression and DNA accessibility measurements. This is implemented as [FindMultiModalNeighbors](https://satijalab.org/seurat/reference/findmultimodalneighbors) function by Seurat. Taking as input two dimensional reductions, one computed for each modality, it construct the WNN graph by identifying the nearest neighbos for each cell based on a weighted combination of two modalities.
+
+```{r}
+
+# build a joint neighbor graph using both assays
+# the results will be stored in the neighbors slot of the pbmc object and can be accessed using pbmc[['weighted.nn']]
+pbmc <- FindMultiModalNeighbors(
+  object = pbmc,
+  reduction.list = list("pca", "lsi"), # pca for RNA and lsi for ATAC 
+  dims.list = list(1:50, 2:40), # the actual dimensions to be used for the two dimension reduction
+  modality.weight.name = "RNA.weight", # variable name to store modality weight in object meta data
+  verbose = FALSE # no need to print progress bars and output 
+)
+
+```
+
+<br/>
+
+Now, we can use the results for downstream analysis such as visualization and clustering. For example, we can create a UMAP visualization of the data based on a weighted combination of RNA and ATAC, together with the annotation we derived. We can see that majority of our annotations are separated well based on different cell type.
+```{r}
+
+# build a joint UMAP visualization
+pbmc <- RunUMAP(
+  object = pbmc,
+  nn.name = "weighted.nn", # Name of knn output on which to run UMAP
+  assay = "RNA",
+  verbose = FALSE
+)
+
+# set the cell identities to the cell type predictions
+Idents(pbmc) <- "predicted.id"
+p0 <- DimPlot(pbmc, label = TRUE, repel = TRUE, reduction = "umap") + NoLegend() + ggtitle("Joint")
+p0
+
+```
+
+
+<br/>
+<details>
+<summary>***As a practice, can you try, by yourself, to run the UMAP visualization on each modality separately?***</summary>
+<br/>
+
+```{r}
+
+DefaultAssay(pbmc) <- "RNA"
+pbmc <- RunUMAP(pbmc, reduction = "pca", dims = 1:30, reduction.name = "umap.rna", reduction.key = "rnaUMAP_")
+p1 <- DimPlot(pbmc, reduction='umap.rna', group.by = "predicted.id", label = TRUE) + NoLegend() + ggtitle("RNA")
+
+DefaultAssay(pbmc) <- "ATAC"
+pbmc <- RunUMAP(pbmc, reduction = "lsi", dims = 2:30, reduction.name = "umap.atac", reduction.key = "atacUMAP_")
+p2 <- DimPlot(pbmc, reduction='umap.atac', group.by = "predicted.id", label = TRUE) + NoLegend() + ggtitle("ATAC")                  
+
+p1+p2+p0
+```
+
+</details>
+
+
+
+<br/>
+
+## Linking peaks to genes
+
+For each gene, we can find the set of peaks that may regulate the gene by by computing the correlation between gene expression and accessibility at nearby peaks, and correcting for bias due to GC content, overall accessibility, and peak size. See the [Signac paper](https://www.biorxiv.org/content/10.1101/2020.11.09.373613v1) for a full description of the method we use to link peaks to genes.
+
+Running this step on the whole genome can be time consuming, so here we demonstrate peak-gene links for a subset of genes as an example. The same function can be used to find links for all genes by omitting the `genes.use` parameter:
+
+```{r, warning=FALSE}
+DefaultAssay(pbmc) <- "ATAC"
+
+# first compute the GC content for each peak
+pbmc <- RegionStats(pbmc, genome = BSgenome.Hsapiens.UCSC.hg38)
+
+# link peaks to genes
+pbmc <- LinkPeaks(
+  object = pbmc,
+  peak.assay = "ATAC",
+  expression.assay = "SCT",
+  genes.use = c("LYZ", "MS4A1")
+)
+
+```
+
+
+We can visualize these links using the `CoveragePlot()` function, or alternatively we could use the `CoverageBrowser()` function in an interactive analysis:
+```{r}
+idents.plot <- c("B naive", "B intermediate", "B memory",
+                 "CD14 Mono", "CD16 Mono", "CD8 TEM", "CD8 Naive")
+
+p1 <- CoveragePlot(
+  object = pbmc,
+  region = "MS4A1",
+  features = "MS4A1",
+  expression.assay = "SCT",
+  idents = idents.plot,
+  extend.upstream = 500,
+  extend.downstream = 10000
+)
+
+p2 <- CoveragePlot(
+  object = pbmc,
+  region = "LYZ",
+  features = "LYZ",
+  expression.assay = "SCT",
+  idents = idents.plot,
+  extend.upstream = 8000,
+  extend.downstream = 5000
+)
+
+patchwork::wrap_plots(p1, p2, ncol = 1)
+```
+
+
+
+
+
+
+# Integrative analysis of single-cell multiomic data with Matilda 
+
+So far, we can see that difference modality in the multiomic data carries the complementary aspects of information towards the same cell. Integrative analysis of the multiomic data helps us makes the best use of all these information together in our downstream tasks. In this section, we will go through a deep learning-based model called  [Matilda](https://watermark.silverchair.com/gkad157.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAA0kwggNFBgkqhkiG9w0BBwagggM2MIIDMgIBADCCAysGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMik7uvO7FTqABDeMQAgEQgIIC_CftO2hSzWxw6Vf7JkEAcSpYQwtOkIPxAQHA2nbU8zHvSzj8xsjbiOZuLg6psUgq6UCpDESP0zBy2XKBanSFg-kNVxuhpSkrbCVi2A7ncr3JGYxsoW_6ZJWQ-A7fcQ6zO4qgaUXeVgaSsY3bKDXbxqGc8_BnJgLac9Em9ysK9OizwjCI-K5irmBaisiyZJyLzdyTyfO9vv6YRPhybL29fCknvngzDPYek-tvj5X0URGQqqFFZPz5SQAyFjEt_fleCxOVBSR30kW7QbE4cv5pniI2iu8znCNUwo4jL-axYShy81amjf8TbjkrMQGDdtPH0z2NxmON39Vbhd-UjojNqCL77ZJf6k7LBgGvyRRBpkUfWOkpNTsnbtrFrpZ5aCFoNmaeoqesAlF15O-NSd-6rZhHANbx8-WFmusghj2FZrQdn_cCjt8qeGlwpx9VkV6gxelL3Mt4ftBCkAReq6aMVxJf1LypfcjO-QSoTJpe44bUC-bRV95vg7jToFLZR52K8a-JD8fZXtpDvn6mgN7nbzuD3gaqjgsWMlTUbXpVUpSUUz84LZx2FhXOFPUkNxXFjl0q9S9u9AlFSY1Mfwc46DlPwgYeRqi-7heHnA0iPMKIs_io4lOU9pcObDBixxSzk5OKaJh3GL0IWC0rzBNDrqMuILO5tAUCw2prUFZtXouc8hc_9mXZ906hi2BfMrAflzHxnaP2n-zA6RB1tfVJ2ZdnbR0Hzup4Hj6BHaOmZ8s9NqjbK6HsIjJ28PAJ16QNcT6-nCGbOULGFv1pWKYlWIMJORWDnzpV9-FGQtKeSyXvbjPwp1-5ELckUIgMy3Idkqc0KSQIZS789_rWvh-U0YPINFnxfY9AdWerbOaIHDXxMLjr88tMUHug0RmBT5GsrNYzy5rqqFJjXxIheCaNIqlNoywO5nTxWS2X9HQX_IeJC6LgD3q9uR_kFtiFCnQ-fvLSaO_HzQFpzZID3sDdFaYheTtU3RBCaCwZ1WxvM24L3Rlqj_TUzjh9qJRY), which proposes a multitask learning method for integrative analysis of multimodal single-cell omics data. 
+
+
+Since Matilda is implemented in Python, we will move to our [Python environment for Matilda](https://colab.research.google.com/drive/1aSU1Oi0ecBthcG27FvvKodxBg22B7Alo?usp=sharing) for running the model. However, before that, we will first wrap our data into the input formats that are compatible with Matilda. 
+
+First, let us load the packages required for wrapping the data for Matilda. The `CreateGeneActivityMatrix2.R` file contains the functions for converting the ATAC peak counts into gene activity score, which is recommended by Matilda. The `data_to_h5.R` file contains the utility functions to write the RNA/ATAC matrix and our cell type annotation into the required formats. 
+
+```{r, eval=FALSE}
+## load package
+source("utils/CreateGeneActivityMatrix2.R")
+source("utils/data_to_h5.R")
+library(caret) # help us split the data into training and test
+```
+
+
+Here is all the data we need to prepare in our case to run Matilda, including the RNA and ATAC count matrix, and the cell type labels. When we have our own multiomic datasets to be analysed, we can just prepare like this. Easy!
+
+```{r, eval=FALSE}
+
+# prepare rna and peak count matrix
+rna <- pbmc@assays$RNA$counts
+peak <- pbmc@assays$ATAC$counts
+
+# prepare the cell type annotation
+celltype_anno <- pbmc@meta.data[['predicted.id']]
+
+# names for saving the data
+data_name <- 'pbmc'
+anno_name <- 'seurat_annotation'
+
+```
+
+After we have the data prepared, we can just simply run the following code snippet, which 
+
+- converts the ATAC peak counts into gene activity score
+
+- filters the features (genes) as recommended by Matilda and select the common features
+
+- splits data into training and test set (20% and 80%) as is done in Maltilda manuscript (you can decide your own ratio)
+
+- saves the data into required formats (`h5` for data matrix and `csv` for cell type labels)
+
+
+Again, to save time, we already ran the code and prepared the data in our [Python environment for Matilda](https://colab.research.google.com/drive/1aSU1Oi0ecBthcG27FvvKodxBg22B7Alo?usp=sharing). We can easily download the prepared data in there based on the instructions. Let's go! 
+
+```{r, eval=FALSE}
+
+# Convert peak count to gene activity score
+# We can easily download other versions of the Ensembl human gene annotations and pass its path as the 'annotation.file' parameter
+gene.activities <- CreateGeneActivityMatrix2(peak.matrix=peak,
+                                             annotation.file ="Homo_sapiens.GRCh37.82.gtf",
+                                             seq.levels = c(1:19, "X", "Y"),seq_replace= c("_"))
+
+rownames(rna) <- toupper(rownames(rna))
+rownames(gene.activities) <- toupper(rownames(gene.activities))
+
+# filtered out RNA and ATAC quantified in fewer than 1% of the cells
+sel <- names(which(rowSums(rna == 0) / ncol(rna) < 0.99))
+rna <- rna[sel,]
+sel <- names(which(rowSums(gene.activities == 0) / ncol(gene.activities) < 0.99))
+gene.activities <- gene.activities[sel,]
+
+# Keep the common genes/features
+common_gene <- intersect(rownames(rna), rownames(gene.activities))
+rna <- rna[common_gene,]
+gene.activities <- gene.activities[common_gene, ]
+
+# filter out cell types that have less than 10 cells
+rna.filt <- rna[, celltype_anno %in% names(table(celltype_anno))[table(celltype_anno)>10]]
+gene.activities.filt <- gene.activities[, celltype_anno %in% names(table(celltype_anno))[table(celltype_anno)>10]]
+celltype_anno.filt <- celltype_anno[celltype_anno %in% names(table(celltype_anno))[table(celltype_anno)>10]]
+
+# Split the data to get our training and test data (20%/80%)
+f <- createFolds(celltype_anno.filt, 5)
+folds.train <- c(f[[1]]) # 20%
+folds.test <- c(f[[2]], f[[3]], f[[4]], f[[5]]) # 80%
+
+rna.train <- rna.filt[, folds.train]
+rna.test <- rna.filt[, folds.test]
+gene.activities.train <- gene.activities.filt[, folds.train]
+gene.activities.test <- gene.activities.filt[, folds.test]
+celltype_anno.train <- celltype_anno.filt[folds.train]
+celltype_anno.test <- celltype_anno.filt[folds.test]
+
+
+# save processed data
+write_h5(exprs_list = list(rna = rna.train), 
+             h5file_list = c(paste("rna_",data_name,"_train.h5",sep=''))) 
+write_h5(exprs_list = list(rna = rna.test), 
+             h5file_list = c(paste("rna_",data_name,"_test.h5",sep=''))) 
+write_h5(exprs_list = list(atac = gene.activities.train), 
+             h5file_list = c(paste("gas_",data_name,"_train.h5",sep='')))
+write_h5(exprs_list = list(atac = gene.activities.test), 
+             h5file_list = c(paste("gas_",data_name,"_test.h5",sep='')))
+
+# save annotation
+write_csv(cellType_list =  list(cty = celltype_anno.train),
+            csv_list = c(paste(data_type,"_",anno_name, "_cty_train.csv",sep=''))) 
+write_csv(cellType_list =  list(cty = celltype_anno.test),
+            csv_list = c(paste(data_type,"_",anno_name, "_cty_test.csv",sep=''))) 
+```
+
+
+
