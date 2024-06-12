@@ -1,0 +1,12 @@
+url: https://carissaynchen.github.io/SCMultiome-CNRS-workshop-R/
+template:
+  params:
+    bootswatch: flatly
+home:
+  title: SCMultiome Workshop at CNRS
+  type: inverse
+navbar:
+  right:
+  - icon: fa-github
+    href: https://github.com/carissaynchen/SCMultiome-CNRS-workshop-R
+

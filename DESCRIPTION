@@ -1,0 +1,69 @@
+Package: SCMultiomeCNRSR
+Title: SCMultiome Workshop at CNRS
+Version: 0.1.0
+Authors@R: c(
+    person(given = "Carissa", family = "Chen", email = "carissa.chen@sydney.edu.au", role=c("aut", "cre")),
+    person(given = "Sharon", family = "Long", email = "siqu.long@sydney.edu.au", role=c("aut")),
+    person(given = "Pengyi", family = "Yang", email = "pengyi.yang@sydney.edu.au", role=c("aut"))
+    )
+Description: Workshop for single-cell RNA-seq and multiomic analysis - R component
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Depends: 
+    Biobase,
+    R (>= 4.1)
+Imports:
+    howmany,
+    devtools,
+    remotes,
+    batchelor,
+    pcaMethods,
+    SingleCellExperiment,
+    scater,
+    scran,
+    scDblFinder,
+    ggthemes,
+    ggridges,
+    reshape2,
+    ggpubr,
+    ggplot2,
+    ggrastr,
+    patchwork,
+    viridis,
+    shiny,
+    tidyverse,
+    plyr,
+    BiocParallel,
+    mclust,
+    presto,
+    DT, 
+    DescTools,
+    tradeSeq,
+    edgeR,
+    Rtsne,
+    scales,
+    slingshot,
+    UpSetR, 
+    clusterExperiment,
+    clusterProfiler,
+    scHOT,
+    org.Mm.eg.db,
+    CiteFuse,
+    SingleCellExperiment
+Suggests: 
+    knitr,
+    rmarkdown,
+    pkgdown,
+    spdep
+URL: https://github.com/carissaynchen/SCMultiome-CNRS-workshop-R, https://carissaynchen.github.io/SCMultiome-CNRS-workshop-R/
+BugReports: https://github.com/carissaynchen/SCMultiome-CNRS-workshop-R/issues/new/choose
+VignetteBuilder: knitr
+Remotes: 
+    PYangLab/Cepo,
+    satijalab/seurat,
+    MarioniLab/DropletUtils,
+    immunogenomics/presto,
+    jokergoo/ComplexHeatmap,
+    cole-trapnell-lab/monocle3

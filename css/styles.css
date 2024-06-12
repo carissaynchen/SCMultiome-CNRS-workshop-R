@@ -1,0 +1,240 @@
+
+/* Change colour of hover */
+
+ul.nav li a, ul.nav li a:visited {
+    color: rgb(18, 65, 108) !important;
+}
+
+ul.nav li a:hover, ul.nav li a:active {
+    color: rgb(18, 65, 108) !important;
+}
+
+ul.nav li.active a {
+    color: white !important;
+}
+
+
+
+
+
+
+/* Lab customising (like Lectures) */
+
+/* General Styles 
+ul = bullet points
+li = lists
+td = a standard cell in table
+p = paragraph
+h = headings
+*/
+
+/* Table styles         NEW*/
+
+td, th {
+   font-size: 13px !important;
+    padding: 0.25em 0.5em !important; 
+  }
+
+/* Bullet point styles */
+
+ul { 
+list-style-type: round;
+}
+
+
+/* Keyword Styles */
+
+.kwd {
+  font-weight: bold;
+  color: 	rgb(18, 65, 108);
+/*  color: 	#5E9DC8; */
+}
+
+/* Line Styles */
+
+.line{
+  font-size: 1.1em;
+  font-weight: bold;
+  color: red;
+  margin: 0 2px;
+  padding: 0 5px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+
+/* In-line Code Style */
+
+tt {
+   font-size: 0.9em;
+   margin: 0 2px;
+   padding: 0 5px;
+   white-space: nowrap;
+   border: 3px solid #eaeaea;
+   background-color: #f8f8f8;
+   border-radius: 3px; }
+
+/* Code Block Style */
+
+div.code_block {
+    width: 980px;
+    height: 500px;
+    overflow: auto;
+    /*
+    overflow-x: auto;
+    overflow-y: auto;
+    */
+}
+
+/* Link Styles */
+
+a { 
+  color: black;
+  text-decoration: underline;
+  border-bottom: 0;
+}
+/*a:visited { color: #551a8b; } */
+a:visited { color: rgb(18, 65, 108); }
+a:focus { outline: thin dotted; }
+
+a:hover, a:visited, a:link, a:active
+{
+    text-decoration: none;
+}
+
+/* Improve readability when focused and hovered in all browsers: people.opera.com/patrickl/experiments/keyboard/test */
+a:hover, a:active { outline: 0; }
+
+
+/* Box Styles */
+
+/*Aim box */
+.aimbox 
+{
+    padding: 10px;
+    border: 3px solid grey;
+    background: white;
+}
+
+/* Nicer Table Style Di */
+table,
+.table-condensed,
+table.rmdtable {
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+table,
+.table-condensed,
+table.rmdtable,
+table.rmdtable .header th,
+.table > thead > tr > th {
+  border-collapse: collapse;
+  border-style: solid;
+  border-spacing: 0;
+  border-width: medium 0 medium 0;
+  border-color: inherit
+}
+table.rmdtable th,
+table.rmdtable td,
+table th,
+table.rmdtable tr > td:first-child,
+table.rmdtable .even {
+  font-size: 50%;
+  padding: 0.4em 0.5em;
+  color: inherit;
+  background: #FFF;
+  font-weight: normal;
+}
+.table > tbody > tr > td {
+  border-width: 0;
+}
+
+/* reduces colour in code chunks Di  */
+.prettyprint,
+pre {
+    max-width: 100%;
+    left: 0;
+    display: block;
+    padding: 9.5px;
+    font-size: 13px;
+    line-height: 1.42857;
+    word-break: break-all;
+    word-wrap: break-word;
+    color: #333333;
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+}
+
+/*** font ***/
+
+#myinfo {
+    text-transform: none;
+    font-family: arial, helvetica, sans-serif;
+}
+
+/* Steel Blue headings as default throughout */
+h1,h2,h3,h4,h5,h6 {
+  color: rgb(18, 65, 108); 
+}
+
+h1.title {
+  font-weight: bold;
+  color: IndianRed;
+}
+
+h4.author {
+  color: IndianRed;
+  font-style: normal;   
+}
+/* This unforunately doesn't override italics default in yaml heading */
+
+/* Black text as default throughout */
+ul,li,td,p {
+  color: black;  
+}
+
+
+
+/* Lab setup  - I don't think this is needed?
+
+.navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-nav>li>a:focus {
+  color: #228B22;
+}
+
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.active>a:focus {
+  color: #228B22;
+}
+
+.dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus {
+  background-color: #228B22;
+}
+*/
+
+
+
+/*
+.navbar-default {
+    background-color: rgb(18, 65, 108) !important;
+    border-color: #222222;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color:rgb(18, 65, 108) !important;
+}
+
+// Also don't forget to change the hover styles as well
+
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+    color: rgb(18, 65, 108);
+    background-color: rgb(18, 65, 108) !important;
+}   
+
+// And the brand colour
+
+.navbar-default .navbar-brand {
+    color: rgb(18, 65, 108);
+}   
+*/
