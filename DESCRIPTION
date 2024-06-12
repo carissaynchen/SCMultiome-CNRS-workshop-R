@@ -15,7 +15,6 @@ Depends:
     Biobase,
     R (>= 4.1)
 Imports:
-    howmany,
     devtools,
     remotes,
     batchelor,
