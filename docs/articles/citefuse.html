@@ -35,6 +35,9 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
@@ -64,8 +67,9 @@
 
 
 
+<link href="citefuse_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
 <script src="citefuse_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="citefuse_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="citefuse_files/datatables-binding-0.32/datatables.js"></script><link href="citefuse_files/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<script src="citefuse_files/datatables-binding-0.33/datatables.js"></script><link href="citefuse_files/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
 <link href="citefuse_files/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
 <script src="citefuse_files/dt-core-1.13.6/js/jquery.dataTables.min.js"></script><link href="citefuse_files/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
 <script src="citefuse_files/crosstalk-1.2.1/js/crosstalk.min.js"></script><div class="row">
@@ -214,8 +218,9 @@ object, which stores RNA data in an <code>assay</code> and
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"CITEseq_example"</span>, package <span class="op">=</span> <span class="st">"CiteFuse"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">CITEseq_example</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "RNA" "ADT" "HTO"</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">CITEseq_example</span>, <span class="va">dim</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "RNA" "ADT" "HTO"</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">CITEseq_example</span>, <span class="va">dim</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $RNA</span></span>
 <span><span class="co">#&gt; [1] 19521   500</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -224,7 +229,7 @@ object, which stores RNA data in an <code>assay</code> and
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $HTO</span></span>
 <span><span class="co">#&gt; [1]   4 500</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/preprocessing.html" class="external-link">preprocessing</a></span><span class="op">(</span><span class="va">CITEseq_example</span><span class="op">)</span></span>
 <span><span class="va">sce_citeseq</span></span>
 <span><span class="co">#&gt; class: SingleCellExperiment </span></span>
@@ -260,7 +265,7 @@ same sample are captured together in a droplet.</p>
 alternative expression. Here, we used it to perform log-transformation
 of the <code>HTO</code> count, by setting
 <code>transform = "log"</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/normaliseExprs.html" class="external-link">normaliseExprs</a></span><span class="op">(</span>sce <span class="op">=</span> <span class="va">sce_citeseq</span>, </span>
 <span>                              altExp_name <span class="op">=</span> <span class="st">"HTO"</span>, </span>
 <span>                              transform <span class="op">=</span> <span class="st">"log"</span><span class="op">)</span></span></code></pre></div>
@@ -272,7 +277,7 @@ pooled before sequencing. The samples were multiplexed through cell
 hashing <a href="https://doi.org/10.1038/nmeth.4380" class="external-link">Stoeckius et al.,
 2018</a>. The four clusters observed on reduced dimension plots equate
 to the four different samples.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu">scater</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/scater/man/runTSNE.html" class="external-link">runTSNE</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, </span>
 <span>                               altexp <span class="op">=</span> <span class="st">"HTO"</span>, </span>
 <span>                               name <span class="op">=</span> <span class="st">"TSNE_HTO"</span>, </span>
@@ -308,32 +313,33 @@ without any high-signal HTOs are considered as empty droplets.</p>
 sample doublets are then saved in the <code>colData</code> slot as
 <code>doubletClassify_between_label</code> and
 <code>doubletClassify_between_class</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/crossSampleDoublets.html" class="external-link">crossSampleDoublets</a></span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">)</span></span>
 <span><span class="co">#&gt; number of iterations= 20 </span></span>
 <span><span class="co">#&gt; number of iterations= 24 </span></span>
 <span><span class="co">#&gt; number of iterations= 46 </span></span>
 <span><span class="co">#&gt; number of iterations= 50</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">doubletClassify_between_label</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;                 1                 2                 3                 4 </span></span>
 <span><span class="co">#&gt;               115               121                92               129 </span></span>
 <span><span class="co">#&gt; doublet/multiplet </span></span>
-<span><span class="co">#&gt;                43</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">doubletClassify_between_class</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                43</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">doubletClassify_between_class</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; doublet/multiplet           Singlet </span></span>
 <span><span class="co">#&gt;                43               457</span></span></code></pre></div>
 <p>We can then highlight the cross-sample doublets in our tSNE plot of
 HTO count. How would we visualise the between label and between class
 doublets side-by-side?</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visualiseDim.html" class="external-link">visualiseDim</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, </span>
 <span>             dimNames <span class="op">=</span> <span class="st">"TSNE_HTO"</span>, </span>
 <span>             colour_by <span class="op">=</span> <span class="st">"doubletClassify_between_label"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="citefuse_files/figure-html/unnamed-chunk-8-1.png" width="576"></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># insert code to visualise "doubletClassify_between_class"</span></span></code></pre></div>
 <p><br></p>
@@ -360,40 +366,41 @@ sample doublets are then saved in the <code>colData</code> as
 parameters?</li>
 <li>What happens when you vary these parameters?</li>
 </ul>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/withinSampleDoublets.html" class="external-link">withinSampleDoublets</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, minPts <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">doubletClassify_within_label</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  Doublets(Within)_1  Doublets(Within)_2  Doublets(Within)_3  Doublets(Within)_4 </span></span>
 <span><span class="co">#&gt;                   3                   7                   4                   6 </span></span>
 <span><span class="co">#&gt; NotDoublets(Within) </span></span>
-<span><span class="co">#&gt;                 480</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">doubletClassify_within_class</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                 480</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">doubletClassify_within_class</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Doublet Singlet </span></span>
 <span><span class="co">#&gt;      20     480</span></span></code></pre></div>
 <p>Again, we can visualise the within-sample doublets in our tSNE plot.
 How would we visualise the within label and within class doublets
 side-by-side?</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visualiseDim.html" class="external-link">visualiseDim</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, </span>
 <span>             dimNames <span class="op">=</span> <span class="st">"TSNE_HTO"</span>, </span>
 <span>             colour_by <span class="op">=</span> <span class="st">"doubletClassify_within_label"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="citefuse_files/figure-html/unnamed-chunk-11-1.png" width="576"></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># insert code to visualise "doubletClassify_within_class"</span></span></code></pre></div>
 <p>Furthermore, <code>plotHTO</code> function allows us to plot the
 pairwise scatter HTO count. Any cells that show co-expression of
 orthogonal HTOs (red) are considered as doublets. Which comparison has
 the most cross-sample doublets?</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/plotHTO.html" class="external-link">plotHTO</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></code></pre></div>
 <p><img src="citefuse_files/figure-html/unnamed-chunk-12-1.png" width="576"></p>
 <p>Finally, we can filter out the doublet cells (both within and between
 batches) for the downstream analysis.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="va">sce_citeseq</span><span class="op">[</span>, <span class="va">sce_citeseq</span><span class="op">$</span><span class="va">doubletClassify_within_class</span> <span class="op">==</span> <span class="st">"Singlet"</span> <span class="op">&amp;</span> <span class="va">sce_citeseq</span><span class="op">$</span><span class="va">doubletClassify_between_class</span> <span class="op">==</span> <span class="st">"Singlet"</span><span class="op">]</span></span>
 <span><span class="va">sce_citeseq</span></span>
 <span><span class="co">#&gt; class: SingleCellExperiment </span></span>
@@ -421,7 +428,7 @@ batches) for the downstream analysis.</p>
 <p>The next step of analysis is to integrate the RNA and ADT matrix. We
 use a popular integration algorithm called similarity network fusion
 (SNF) to integrate the multi-omic data.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu">scater</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/scuttle/man/logNormCounts.html" class="external-link">logNormCounts</a></span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">)</span></span>
 <span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/normaliseExprs.html" class="external-link">normaliseExprs</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, altExp_name <span class="op">=</span> <span class="st">"ADT"</span>, transform <span class="op">=</span> <span class="st">"log"</span><span class="op">)</span></span>
 <span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/CiteFuse.html" class="external-link">CiteFuse</a></span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">)</span></span>
@@ -431,7 +438,7 @@ use a popular integration algorithm called similarity network fusion
 <code>SNF_W</code> in the metadata slot of our <code>sce_citeseq</code>
 object. We can calculate the t-SNE to generate an integrated embedding
 using the SNF network.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/reducedDimSNF.html" class="external-link">reducedDimSNF</a></span><span class="op">(</span><span class="va">sce_citeseq</span>,</span>
 <span>                             method <span class="op">=</span> <span class="st">"tSNE"</span>, </span>
 <span>                             dimNames <span class="op">=</span> <span class="st">"tSNE_joint"</span><span class="op">)</span></span></code></pre></div>
@@ -448,24 +455,25 @@ clustering if users wish to use another clustering method. We use the
 <code>igraph</code> package, and any community detection algorithms
 available in their package can be selected by changing the
 <code>method</code> parameter.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
 <span><span class="va">SNF_W_louvain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/igraphClustering.html" class="external-link">igraphClustering</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, method <span class="op">=</span> <span class="st">"louvain"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">SNF_W_louvain</span><span class="op">)</span></span>
 <span><span class="co">#&gt; SNF_W_louvain</span></span>
 <span><span class="co">#&gt;   1   2   3   4   5   6   7 </span></span>
-<span><span class="co">#&gt;  88 137  65  32  51  28  36</span></span>
-<span></span>
+<span><span class="co">#&gt;  88 137  65  32  51  28  36</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">SNF_W_louvain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">SNF_W_louvain</span><span class="op">)</span></span></code></pre></div>
 <p>The outcome of the clustering can be easily visualised on a reduced
 dimensions plot by highlighting the points by cluster label.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visualiseDim.html" class="external-link">visualiseDim</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, dimNames <span class="op">=</span> <span class="st">"tSNE_joint"</span>, colour_by <span class="op">=</span> <span class="st">"SNF_W_louvain"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"tSNE (SNF louvain clustering)"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="citefuse_files/figure-html/unnamed-chunk-17-1.png" width="1152"></p>
 <p>Alternatively, the clustering can be easily visualised using a KNN
 graph labelled by cluster number.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visualiseKNN.html" class="external-link">visualiseKNN</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, colour_by <span class="op">=</span> <span class="st">"SNF_W_louvain"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="citefuse_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
@@ -479,13 +487,13 @@ matrix, spectral clustering and Louvain clustering. First, we perform
 spectral clustering with sufficient numbers of <code>K</code> and use
 the eigen values to determine the optimal number of clusters. What is
 the optimal number of clusters here?</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">SNF_W_clust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/spectralClustering.html" class="external-link">spectralClustering</a></span><span class="op">(</span><span class="fu">metadata</span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">)</span><span class="op">[[</span><span class="st">"SNF_W"</span><span class="op">]</span><span class="op">]</span>, K <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Computing Spectral Clustering</span></span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">SNF_W_clust</span><span class="op">$</span><span class="va">eigen_values</span><span class="op">)</span></span></code></pre></div>
 <p><img src="citefuse_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">SNF_W_clust</span><span class="op">$</span><span class="va">eigen_values</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 5</span></span></code></pre></div>
 <p>Using the optimal cluster number defined from the previous step, we
@@ -497,18 +505,21 @@ Since the <code>CiteFuse</code> function creates and stores the
 similarity matries from ADT and RNA expression, as well the fused
 matrix, we can use these two to compare the clustering outcomes by data
 modality.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">SNF_W_clust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/spectralClustering.html" class="external-link">spectralClustering</a></span><span class="op">(</span><span class="fu">metadata</span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">)</span><span class="op">[[</span><span class="st">"SNF_W"</span><span class="op">]</span><span class="op">]</span>, K <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Computing Spectral Clustering</span></span>
-<span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">SNF_W_clust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">SNF_W_clust</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Computing Spectral Clustering</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">SNF_W_clust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">SNF_W_clust</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">SNF_W1_clust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/spectralClustering.html" class="external-link">spectralClustering</a></span><span class="op">(</span><span class="fu">metadata</span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">)</span><span class="op">[[</span><span class="st">"ADT_W"</span><span class="op">]</span><span class="op">]</span>, K <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Computing Spectral Clustering</span></span>
-<span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">ADT_clust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">SNF_W1_clust</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Computing Spectral Clustering</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">ADT_clust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">SNF_W1_clust</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">SNF_W2_clust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/spectralClustering.html" class="external-link">spectralClustering</a></span><span class="op">(</span><span class="fu">metadata</span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">)</span><span class="op">[[</span><span class="st">"RNA_W"</span><span class="op">]</span><span class="op">]</span>, K <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Computing Spectral Clustering</span></span>
-<span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">RNA_clust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">SNF_W2_clust</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; Computing Spectral Clustering</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">RNA_clust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">SNF_W2_clust</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span></span></code></pre></div>
 <p><br></p>
 </div>
 </div>
@@ -525,7 +536,7 @@ the cluster labels stored in the <code>sce_citeseq</code> object.</p>
 the <code>colour_by</code> parameter to assess the clusters. As an
 example, we highlight the plot by the RNA and ADT expression level of
 CD8.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">g1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visualiseDim.html" class="external-link">visualiseDim</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, dimNames <span class="op">=</span> <span class="st">"tSNE_joint"</span>, </span>
 <span>                   colour_by <span class="op">=</span> <span class="st">"hg19_CD8A"</span>,</span>
 <span>                   data_from <span class="op">=</span> <span class="st">"assay"</span>,</span>
@@ -543,7 +554,7 @@ CD8.</p>
 <p><strong>Alternative visualisation 1:</strong> We can plot a boxplot
 of the expression of a subset of genes per cluster detected by the
 louvain clustering algorithm.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visualiseExprs.html" class="external-link">visualiseExprs</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, </span>
 <span>               plot <span class="op">=</span> <span class="st">"boxplot"</span>, </span>
 <span>               altExp_name <span class="op">=</span> <span class="st">"RNA"</span>,</span>
@@ -553,7 +564,7 @@ louvain clustering algorithm.</p>
 <p><strong>Alternative visualisation 2:</strong> We can plot a violin
 plot of the expression of a subset of genes per cluster detected by the
 louvain clustering algorithm.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visualiseExprs.html" class="external-link">visualiseExprs</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, </span>
 <span>               plot <span class="op">=</span> <span class="st">"violin"</span>,</span>
 <span>               altExp_name <span class="op">=</span> <span class="st">"RNA"</span>,</span>
@@ -563,7 +574,7 @@ louvain clustering algorithm.</p>
 <p><strong>Alternative visualisation 3:</strong> We can plot a jitter of
 the expression of a subset of genes per cluster detected by the louvain
 clustering algorithm.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visualiseExprs.html" class="external-link">visualiseExprs</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, </span>
 <span>               plot <span class="op">=</span> <span class="st">"jitter"</span>, </span>
 <span>               altExp_name <span class="op">=</span> <span class="st">"RNA"</span>,</span>
@@ -573,7 +584,7 @@ clustering algorithm.</p>
 <p><strong>Alternative visualisation 4:</strong> We can plot a density
 plot of the expression of a subset of genes per cluster detected by the
 louvain clustering algorithm.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visualiseExprs.html" class="external-link">visualiseExprs</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, </span>
 <span>               plot <span class="op">=</span> <span class="st">"density"</span>, </span>
 <span>               altExp_name <span class="op">=</span> <span class="st">"RNA"</span>,</span>
@@ -589,7 +600,7 @@ that are differentially expressed in any clusters?</li>
 <p><strong>Alternative visualisation 5:</strong> We can also create a
 pairwise scatter plot to visualise the distribution of cells that are
 expressing certain markers.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visualiseExprs.html" class="external-link">visualiseExprs</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, altExp_name <span class="op">=</span> <span class="st">"ADT"</span>, </span>
 <span>               plot <span class="op">=</span> <span class="st">"pairwise"</span>, </span>
 <span>               feature_subset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD4"</span>, <span class="st">"CD8"</span><span class="op">)</span><span class="op">)</span></span>
@@ -620,7 +631,7 @@ RNA and ADT expression, respectively.</p>
 <div class="section level4">
 <h4 id="for-rna-modality">For RNA modality<a class="anchor" aria-label="anchor" href="#for-rna-modality"></a>
 </h4>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># DE will be performed for RNA if altExp_name = "none" </span></span>
 <span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/DEgenes.html" class="external-link">DEgenes</a></span><span class="op">(</span><span class="va">sce_citeseq</span>,</span>
 <span>                       altExp_name <span class="op">=</span> <span class="st">"none"</span>, </span>
@@ -639,7 +650,7 @@ RNA and ADT expression, respectively.</p>
 <div class="section level4">
 <h4 id="for-adt-modality">For ADT modality<a class="anchor" aria-label="anchor" href="#for-adt-modality"></a>
 </h4>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/DEgenes.html" class="external-link">DEgenes</a></span><span class="op">(</span><span class="va">sce_citeseq</span>,</span>
 <span>                       altExp_name <span class="op">=</span> <span class="st">"ADT"</span>, </span>
 <span>                       group <span class="op">=</span> <span class="va">sce_citeseq</span><span class="op">$</span><span class="va">SNF_W_louvain</span>,</span>
@@ -666,7 +677,7 @@ transformed adjusted p-values of the specified genes in RNA and ADT in
 each cluster.</p>
 <p>It requires a list of features from both RNA and ADT that we are
 interested in, as well as the output from the DE analysis.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rna_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hg19_CD4"</span>, <span class="st">"hg19_CD8A"</span>, <span class="st">"hg19_HLA-DRB1"</span>, <span class="st">"hg19_ITGAX"</span>, <span class="st">"hg19_NCAM1"</span>, <span class="st">"hg19_CD27"</span>, <span class="st">"hg19_CD19"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">adt_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD4"</span>, <span class="st">"CD8"</span>, <span class="st">"MHCII (HLA-DR)"</span>, <span class="st">"CD11c"</span>, <span class="st">"CD56"</span>, <span class="st">"CD27"</span>, <span class="st">"CD19"</span><span class="op">)</span></span>
@@ -710,7 +721,7 @@ correlation in expression.</p>
 <li>What if we vary the <code>cor_threshold</code> parameter?</li>
 <li>How do we examine the network for a specific cluster?</li>
 </ul>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">RNA_feature_subset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">rna_DEgenes_all</span>, <span class="st">"[["</span>, <span class="st">"name"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">ADT_feature_subset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">adt_DEgenes_all</span>, <span class="st">"[["</span>, <span class="st">"name"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -750,7 +761,7 @@ predict receptor expression within receiver cells. Note that the setting
 ligand-receptor interaction from RNA expression only.</p>
 <p>First, we load a database of known ligand-receptor interactions to
 query against our data.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># load the database of known ligand-receptor interactions from cellPhoneDB</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"lr_pair_subset"</span>, package <span class="op">=</span> <span class="st">"CiteFuse"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lr_pair_subset</span><span class="op">)</span></span>
@@ -768,7 +779,7 @@ predictions when means are compared. To address this, we first scaled
 each feature to a range of 0–1 through min–max normalization and then
 transformed the protein expression to force the low-expression values to
 zero.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/normaliseExprs.html" class="external-link">normaliseExprs</a></span><span class="op">(</span>sce <span class="op">=</span> <span class="va">sce_citeseq</span>, </span>
 <span>                              altExp_name <span class="op">=</span> <span class="st">"ADT"</span>, </span>
 <span>                              transform <span class="op">=</span> <span class="st">"zi_minMax"</span><span class="op">)</span></span>
@@ -783,7 +794,7 @@ permutation test is performed on the mean of the average RNA expression
 from the ligand cluster and the mean of the protein expression from the
 receptor cluster. Only ligand–receptor pairs with a P-value of lower
 than 0.05 are defined as significant pairs.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/ligandReceptorTest.html" class="external-link">ligandReceptorTest</a></span><span class="op">(</span>sce <span class="op">=</span> <span class="va">sce_citeseq</span>,</span>
 <span>                                  ligandReceptor_list <span class="op">=</span> <span class="va">lr_pair_subset</span>,</span>
 <span>                                  cluster <span class="op">=</span> <span class="va">sce_citeseq</span><span class="op">$</span><span class="va">SNF_W_louvain</span>,</span>
@@ -796,7 +807,7 @@ than 0.05 are defined as significant pairs.</p>
 <p><strong>Alternative visualisation 1:</strong> To visualise the
 ligand-receptor predictions, we can plot a heatmap of p-values
 indicating significant ligand-receptor pairs between cluster groups.</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visLigandReceptor.html" class="external-link">visLigandReceptor</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, </span>
 <span>                  type <span class="op">=</span> <span class="st">"pval_heatmap"</span>,</span>
 <span>                  receptor_type <span class="op">=</span> <span class="st">"ADT"</span><span class="op">)</span></span></code></pre></div>
@@ -804,7 +815,7 @@ indicating significant ligand-receptor pairs between cluster groups.</p>
 <p><strong>Alternative visualisation 2:</strong> Here, we plot a network
 graph between cluster groups, where the weight of the lines indicate the
 number of LR-pairs.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visLigandReceptor.html" class="external-link">visLigandReceptor</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, </span>
 <span>                  type <span class="op">=</span> <span class="st">"group_network"</span>,</span>
@@ -812,7 +823,7 @@ number of LR-pairs.</p>
 <p><img src="citefuse_files/figure-html/unnamed-chunk-36-1.png" width="768"></p>
 <p><strong>Alternative visualisation 3:</strong> Similarly, we can
 visualise the above counts of LR-pairs in a heatmap.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visLigandReceptor.html" class="external-link">visLigandReceptor</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, </span>
 <span>                  type <span class="op">=</span> <span class="st">"group_heatmap"</span>,</span>
 <span>                  receptor_type <span class="op">=</span> <span class="st">"ADT"</span><span class="op">)</span></span></code></pre></div>
@@ -830,7 +841,7 @@ clustering outcome. <code>CiteFuse</code> calculates the relative
 importance of ADT towards clustering outcome by using a random forest
 model. The higher the score of an ADT, the greater its importance
 towards the final clustering outcome.</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
 <span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/importanceADT.html" class="external-link">importanceADT</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, </span>
 <span>                             group <span class="op">=</span> <span class="va">sce_citeseq</span><span class="op">$</span><span class="va">SNF_W_louvain</span>,</span>
@@ -838,13 +849,13 @@ towards the final clustering outcome.</p>
 <p>The importance scores can be visualised in a boxplot and heatmap. Our
 evaluation of ADT importance show that unsurprisingly CD4 and CD8 are
 the top two discriminating proteins in PBMCs.</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visImportance.html" class="external-link">visImportance</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, plot <span class="op">=</span> <span class="st">"boxplot"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="citefuse_files/figure-html/unnamed-chunk-39-1.png" width="1152"></p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visImportance.html" class="external-link">visImportance</a></span><span class="op">(</span><span class="va">sce_citeseq</span>, plot <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="citefuse_files/figure-html/unnamed-chunk-40-1.png" width="700"></p>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># view the top 20 markers by decreasing importance</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu">metadata</span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">)</span><span class="op">[[</span><span class="st">"importanceADT"</span><span class="op">]</span><span class="op">]</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span><span class="op">]</span></span>
 <span><span class="co">#&gt;              CD27               CD8               CD4               CD5 </span></span>
@@ -860,7 +871,7 @@ the top two discriminating proteins in PBMCs.</p>
 <p>To test whether we would obtain similar clustering results by using a
 subset of important markers, we can try integration and clustering with
 only ADTs with a score greater than 5.</p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">subset_adt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu">metadata</span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">)</span><span class="op">[[</span><span class="st">"importanceADT"</span><span class="op">]</span><span class="op">]</span> <span class="op">&gt;</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">subset_adt</span></span>
 <span><span class="co">#&gt;  [1] "CD11b"             "CD2"               "CD27"             </span></span>
@@ -868,23 +879,25 @@ only ADTs with a score greater than 5.</p>
 <span><span class="co">#&gt;  [7] "CD44"              "CD5"               "CD7"              </span></span>
 <span><span class="co">#&gt; [10] "CD8"               "HLA-A,B,C"         "IL7Ralpha (CD127)"</span></span>
 <span><span class="co">#&gt; [13] "MHCII (HLA-DR)"    "PECAM (CD31)"</span></span></code></pre></div>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_citeseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/CiteFuse.html" class="external-link">CiteFuse</a></span><span class="op">(</span><span class="va">sce_citeseq</span>,</span>
 <span>                        ADT_subset <span class="op">=</span> <span class="va">subset_adt</span>,</span>
 <span>                        metadata_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"W_SNF_adtSubset1"</span>,</span>
 <span>                                           <span class="st">"W_ADT_adtSubset1"</span>,</span>
 <span>                                           <span class="st">"W_RNA"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Calculating affinity matrix </span></span>
-<span><span class="co">#&gt; Performing SNF</span></span>
-<span></span>
+<span><span class="co">#&gt; Performing SNF</span></span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
 <span><span class="va">SNF_W_clust_adtSubset1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/spectralClustering.html" class="external-link">spectralClustering</a></span><span class="op">(</span><span class="fu">metadata</span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">)</span><span class="op">[[</span><span class="st">"W_SNF_adtSubset1"</span><span class="op">]</span><span class="op">]</span>, K <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Computing Spectral Clustering</span></span>
-<span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">SNF_W_clust_adtSubset1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">SNF_W_clust_adtSubset1</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; Computing Spectral Clustering</span></span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">SNF_W_clust_adtSubset1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">SNF_W_clust_adtSubset1</span><span class="op">$</span><span class="va">labels</span><span class="op">)</span></span></code></pre></div>
 <p>To see how well the integration performed with only a subset of ADT
 markers, we can calculate the concordance between the labels (ie.
 adjusted rand index, ARI).</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">mclust</span><span class="fu">::</span><span class="fu"><a href="https://mclust-org.github.io/mclust/reference/adjustedRandIndex.html" class="external-link">adjustedRandIndex</a></span><span class="op">(</span><span class="va">sce_citeseq</span><span class="op">$</span><span class="va">SNF_W_clust_adtSubset1</span>, <span class="va">sce_citeseq</span><span class="op">$</span><span class="va">SNF_W_clust</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.8499764</span></span></code></pre></div>
 <p><strong>Interpretation:</strong></p>
@@ -910,7 +923,7 @@ patients with cutaneous T-cell lymphoma (CTCL), again from Mimitou et
 al. (2019). The data <code>sce_ctcl_subset</code> provided in our
 <code>CiteFuse</code> package already contains the clustering
 information.</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"sce_ctcl_subset"</span>, package <span class="op">=</span> <span class="st">"CiteFuse"</span><span class="op">)</span></span></code></pre></div>
 <p>To visualise and compare gene or protein expression data, we can use
 <code>visualiseExprsList</code> function. Here, we visualise the gene
@@ -920,7 +933,7 @@ individually for each identified cluster.</p>
 <ul>
 <li>How would we visualise the ADT expression?</li>
 </ul>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/visualiseExprsList.html" class="external-link">visualiseExprsList</a></span><span class="op">(</span>sce_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>control <span class="op">=</span> <span class="va">sce_citeseq</span>, ctcl <span class="op">=</span> <span class="va">sce_ctcl_subset</span><span class="op">)</span>,</span>
 <span>                   plot <span class="op">=</span> <span class="st">"boxplot"</span>,</span>
 <span>                   altExp_name <span class="op">=</span> <span class="st">"none"</span>,</span>
@@ -928,14 +941,14 @@ individually for each identified cluster.</p>
 <span>                   feature_subset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hg19_S100A10"</span>, <span class="st">"hg19_CD8A"</span><span class="op">)</span>,</span>
 <span>                   group_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SNF_W_louvain"</span>, <span class="st">"SNF_W_louvain"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="citefuse_files/figure-html/unnamed-chunk-46-1.png" width="700"></p>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># fill in code to visualise the ADT expression of CD19 and CD8 across the conditions</span></span></code></pre></div>
 <p>We can then perform differential expression analysis of the RNA
 expression level across the two clusters that have high CD19 expression
 in ADT. Can you gather anything biologically meaningful about the
 clusters from looking at the top DE genes?</p>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">de_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CiteFuse/man/DEgenesCross.html" class="external-link">DEgenesCross</a></span><span class="op">(</span>sce_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>control <span class="op">=</span> <span class="va">sce_citeseq</span>, ctcl <span class="op">=</span> <span class="va">sce_ctcl_subset</span><span class="op">)</span>,</span>
 <span>                       colData_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SNF_W_louvain"</span>, <span class="st">"SNF_W_louvain"</span><span class="op">)</span>,</span>
 <span>                       group_to_test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2"</span>, <span class="st">"6"</span><span class="op">)</span><span class="op">)</span></span>

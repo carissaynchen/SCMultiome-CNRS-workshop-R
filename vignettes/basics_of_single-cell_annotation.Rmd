@@ -101,6 +101,7 @@ library(tidyverse)
 library(mclust)
 library(presto)
 library(DT)
+library(igraph)
 theme_set(theme_bw())
 ```
 
@@ -143,9 +144,9 @@ In RNA-seq data, there are often genes that are expressed at extreme magnitudes,
 After log normalisation of the data, the next step is to find highly variable genes (HVGs). As the feature space is large, we often perform this step to detect crucial genes that contribute to the cell-cell variation in scRNA-seq. Not only does this help narrow down the feature space to include biologically informative genes, it will also help decrease the computational time of downstream analyses.
 
 ```{r}
-seu <- NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000)
-seu <- FindVariableFeatures(seu, selection.method = "vst")
-seu <- ScaleData(seu, verbose = FALSE, do.scale = TRUE, do.center = FALSE)
+seu <- Seurat::NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000)
+seu <- Seurat::FindVariableFeatures(seu, selection.method = "vst")
+seu <- Seurat::ScaleData(seu, verbose = FALSE, do.scale = TRUE, do.center = FALSE)
 ```
 
 ## Performing dimensionality reduction
@@ -153,9 +154,9 @@ seu <- ScaleData(seu, verbose = FALSE, do.scale = TRUE, do.center = FALSE)
 Principal Component Analysis (PCA) is a statistical technique to transform high dimensionality data into low dimensionality data whilst retaining the variability of the data into Principal Components (PCs). It is typically performed prior to running any other dimensionality reduction technique as algorithms such as t-SNE and UMAP are computationally intensive, this reduces the computational load and memory required whilst optimizing the performance. 
 
 ```{r cache=FALSE}
-seu <- RunPCA(seu, verbose = FALSE)
-seu <- RunTSNE(seu, reduction = "pca", perplexity=200)
-seu <- RunUMAP(seu, reduction = "pca", dims = 1:15, min.dist = 0.5)
+seu <- Seurat::RunPCA(seu, verbose = FALSE)
+seu <- Seurat::RunTSNE(seu, reduction = "pca", perplexity=200)
+seu <- Seurat::RunUMAP(seu, reduction = "pca", dims = 1:15, min.dist = 0.5)
 ```
 
 We will visualise the data using the three dimensionality reduction approaches above and color the individual data points (denoting single cells) by their provided cell type labels. Without much knowledge of the biological system, can you guess whether we have discrete or continuous cell types? What can you infer about the lineages?
@@ -178,12 +179,12 @@ patchwork::wrap_plots(list(p1, p2, p3, p4, p5, p6), nrow=2, guides="collect")
 + What happens to the visualisations when you change the UMAP min.dist parameter?
 
 ```{r fig.height=6, cache=FALSE}
-tmp <- RunTSNE(seu, reduction = "pca", reduction.name = "tsne", perplexity=100)
+tmp <- Seurat::RunTSNE(seu, reduction = "pca", reduction.name = "tsne", perplexity=100)
 DimPlot(tmp, reduction = "tsne", group.by = "age")
 ```
 
 ```{r fig.height=6, cache=FALSE}
-tmp <- RunUMAP(seu, reduction = "pca", reduction.name = "umap", dims = 1:15, min.dist = 0.7)
+tmp <- Seurat::RunUMAP(seu, reduction = "pca", reduction.name = "umap", dims = 1:15, min.dist = 0.7)
 DimPlot(tmp, reduction = "umap", group.by = "age")
 ```
 
@@ -218,8 +219,8 @@ Since we know the number of cell types expected, for the purpose of this tutoria
 + How do we choose the right resolution?
 
 ```{r cache=FALSE}
-seu <- FindNeighbors(seu, dims = 1:10)
-seu <- FindClusters(seu, resolution = 0.1)
+seu <- Seurat::FindNeighbors(seu, dims = 1:10)
+seu <- Seurat::FindClusters(seu, resolution = 0.1)
 ```
 
 ## For a gene of interest, how can I visualise the gene expression distribution?
@@ -296,7 +297,7 @@ pos_only <- cluster1.markers %>%
 **[Optional]** We can evaluate the clustering performance using the cell type labels provided from the publications.
 
 ```{r, fig.height=6}
-seu <- FindClusters(seu, resolution = 0.5) # compare with a different resolution
+seu <- Seurat::FindClusters(seu, resolution = 0.5) # compare with a different resolution
 ```
 
 ```{r}
@@ -383,8 +384,8 @@ set.seed(2023)
 # subsample 70% of the data as training dataset, and rest as test
 idx <- sample(ncol(seu), round(ncol(seu)*0.7))
 
-train <- GetAssayData(seu, layer="data")[, idx]
-test <- GetAssayData(seu, layer="data")[, -idx]
+train <- Seurat::GetAssayData(seu, layer="data")[, idx]
+test <- Seurat::GetAssayData(seu, layer="data")[, -idx]
 
 cellTypes_train <- seu$cell_cluster[idx]
 cellTypes_test <- seu$cell_cluster[-idx]
@@ -457,9 +458,9 @@ table(scClassify_res, cellTypes_test)
 # Save the processed data
 
 ```{r}
-reducedDim(sce, "PCA") <- Embeddings(seu, reduction="pca")
-reducedDim(sce, "TSNE") <- Embeddings(seu, reduction="tsne")
-reducedDim(sce, "UMAP") <- Embeddings(seu, reduction="umap")
+# reducedDim(sce, "PCA") <- Embeddings(seu, reduction="pca")
+# reducedDim(sce, "TSNE") <- Embeddings(seu, reduction="tsne")
+# reducedDim(sce, "UMAP") <- Embeddings(seu, reduction="umap")
 
 # save(sce, file="data/hippocampus_minimal.rda")
 ```

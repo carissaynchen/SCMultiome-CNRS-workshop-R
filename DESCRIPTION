@@ -22,6 +22,7 @@ Imports:
     SingleCellExperiment,
     scater,
     scran,
+    scuttle,
     scDblFinder,
     ggthemes,
     ggridges,
@@ -51,9 +52,8 @@ Imports:
     org.Mm.eg.db,
     EnsDb.Hsapiens.v86,
     BSgenome.Hsapiens.UCSC.hg38,
-    CiteFuse,
-    SingleCellExperiment,
-    Signac
+    Signac,
+    igraph
 Suggests: 
     knitr,
     rmarkdown,

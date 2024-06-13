@@ -125,7 +125,7 @@ dim(sce)
 Assuming sequencing samples are separated by age, we can first look at the reads obtained per library by aggregating the total cell counts by age.
 
 ```{r fig.height=6}
-reads <- colSums2(as.matrix(counts(sce)))
+reads <- matrixStats::colSums2(as.matrix(counts(sce)))
 reads <- sapply(split(1:length(reads), sce$age), function(x) sum(x))
 reads <- reshape2::melt(reads)
 reads$sample <- rownames(reads)
@@ -148,7 +148,7 @@ Next, we use `addPerCellQC` function from the `scater` package to calculate per-
 ```{r cache=FALSE}
 subset <- list(mito = grep("^MT-", rownames(sce)))
 sce <- scater::addPerCellQC(sce, assay.type = "counts", subsets=subset, threshold=0)
-sce$pZero <- colSums2(as.matrix(counts(sce)) == 0)/nrow(sce)
+sce$pZero <- matrixStats::colSums2(as.matrix(counts(sce)) == 0)/nrow(sce)
 colnames(colData(sce))[13:18] <- c("nUMI", "nGenes", "nMito", "mitoGenes_detected", "pMito", "total")
 
 head(colData(sce))
@@ -253,7 +253,7 @@ After running `scDblFinder`, we first plot a bar plot to visualise how many doub
 + Is this expected and why?
 
 ```{r cache=FALSE}
-sce <- scDblFinder(sce, samples="age", clusters=TRUE, BPPARAM=MulticoreParam(3))
+sce <- scDblFinder::scDblFinder(sce, samples="age", clusters=TRUE, BPPARAM=MulticoreParam(3))
 ```
 
 ```{r fig.height=4}
@@ -299,8 +299,8 @@ From the boxplots, we see that the doublet population generally has higher total
 # Save the processed data
 
 ```{r cache=FALSE}
-idx = sce$nUMI < 20000 & sce$pMito < 10 & sce$pZero < 0.98 & sce$scDblFinder.class == "singlet"
-sce <- sce[, idx]
+# idx = sce$nUMI < 20000 & sce$pMito < 10 & sce$pZero < 0.98 & sce$scDblFinder.class == "singlet"
+# sce <- sce[, idx]
 
 # save(sce, file="data/hippocampus_processed.rda")
 ```

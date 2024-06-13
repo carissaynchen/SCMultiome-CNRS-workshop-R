@@ -99,8 +99,8 @@ library(ggthemes)
 library(ggpubr)
 library(reshape2)
 library(patchwork)
-library(scater)
 library(scran)
+library(scuttle)
 library(Seurat)
 library(ggrastr)
 library(tidyverse)
@@ -119,7 +119,7 @@ load(file="../data/hippocampus_minimal.rda")
 sce <- hippocampus_minimal
 rm(hippocampus_minimal)
 
-sce <- logNormCounts(sce)
+sce <- scuttle::logNormCounts(sce)
 ```
 
 <br>
@@ -130,9 +130,9 @@ We will visualise the data using PCA, t-SNE and UMAP calculated from the
 previous section of the workshop.
 
 ```{r fig.height=6, fig.width=12}
-p1 <- plotPCA(sce, colour_by = "cell_cluster", point_size=0.5) + ggtitle("PCA")
-p2 <- plotTSNE(sce, colour_by = "cell_cluster", point_size=0.5) + ggtitle("TSNE")
-p3 <- plotUMAP(sce, colour_by = "cell_cluster", point_size=0.5) + ggtitle("UMAP")
+p1 <- scater::plotPCA(sce, colour_by = "cell_cluster", point_size=0.5) + ggtitle("PCA")
+p2 <- scater::plotTSNE(sce, colour_by = "cell_cluster", point_size=0.5) + ggtitle("TSNE")
+p3 <- scater::plotUMAP(sce, colour_by = "cell_cluster", point_size=0.5) + ggtitle("UMAP")
 
 patchwork::wrap_plots(list(p1 + p2 + p3), guides="collect")
 ```
@@ -168,18 +168,20 @@ The code below demonstrate using Cepo selected genes to perform PCA.
 ```{r fig.height=6, cache=FALSE}
 set.seed(2024)
 sce = scater::runPCA(sce, scale = TRUE, subset_row = cepoGenes, name="PCA_Cepo")
-plotReducedDim(sce, dimred = "PCA_Cepo", colour_by = "cell_cluster", point_size=0.5) + ggtitle("Cepo_PCA")
+scater::plotReducedDim(sce, dimred = "PCA_Cepo", colour_by = "cell_cluster", point_size=0.5) +
+  ggplot2::ggtitle("Cepo_PCA")
 ```
 
 Similarly, there are different dimensionality reduction approaches and we again illustrate the use of t-SNE and UMAP to achieve the same purposes.
 
 ```{r fig.height=6, fig.width=12, cache=FALSE}
 set.seed(2024)
-sce = scater::runTSNE(sce, dimred = "PCA", name="TSNE_Cepo", BPPARAM= MulticoreParam(workers = 4))
-sce = scater::runUMAP(sce, dimred = "PCA", name="UMAP_Cepo", min_dist=0.5,  BPPARAM=MulticoreParam(workers = 4))
+sce = scater::runTSNE(sce, dimred = "PCA", name="TSNE_Cepo", BPPARAM= BiocParallel::MulticoreParam(workers = 4))
 
-p2 = plotReducedDim(sce, dimred = "TSNE_Cepo", colour_by = "cell_cluster", point_size=0.5) + ggtitle("Cepo_TSNE")
-p3 = plotReducedDim(sce, dimred = "UMAP_Cepo", colour_by = "cell_cluster", point_size=0.5) + ggtitle("Cepo_UMAP")
+sce = scater::runUMAP(sce, dimred = "PCA", name="UMAP_Cepo", min_dist=0.5,  BPPARAM=BiocParallel::MulticoreParam(workers = 4))
+
+p2 = scater::plotReducedDim(sce, dimred = "TSNE_Cepo", colour_by = "cell_cluster", point_size=0.5) + ggplot2::ggtitle("Cepo_TSNE")
+p3 = scater::plotReducedDim(sce, dimred = "UMAP_Cepo", colour_by = "cell_cluster", point_size=0.5) + ggplot2::ggtitle("Cepo_UMAP")
 
 patchwork::wrap_plots(list(p2, p3), guides="collect")
 ```

@@ -35,6 +35,9 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
@@ -212,6 +215,7 @@ demonstrate the usage of a supervised classification using
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mclust-org.github.io/mclust/" class="external-link">mclust</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">presto</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/DT" class="external-link">DT</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r.igraph.org/" class="external-link">igraph</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span>file<span class="op">=</span><span class="st">"../data/hippocampus_processed.rda"</span><span class="op">)</span></span>
@@ -231,7 +235,7 @@ will be helpful for the next part of the workshop.</p>
 <span>    <span class="va">meta.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span></span>
 <span>  <span class="kw">else</span> <span class="va">meta.data</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
 <span>  <span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/dge.html" class="external-link">counts</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">[</span><span class="va">drops</span>, ,drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
-<span>  <span class="va">seur</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">counts</span>, meta.data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">meta.data</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">seur</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">counts</span>, meta.data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">meta.data</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">seur</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -256,9 +260,9 @@ variation in scRNA-seq. Not only does this help narrow down the feature
 space to include biologically informative genes, it will also help
 decrease the computational time of downstream analyses.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">seu</span>, normalization.method <span class="op">=</span> <span class="st">"LogNormalize"</span>, scale.factor <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
-<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">seu</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span></span>
-<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">ScaleData</a></span><span class="op">(</span><span class="va">seu</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, do.scale <span class="op">=</span> <span class="cn">TRUE</span>, do.center <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">seu</span>, normalization.method <span class="op">=</span> <span class="st">"LogNormalize"</span>, scale.factor <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
+<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">seu</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span><span class="op">)</span></span>
+<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/ScaleData.html" class="external-link">ScaleData</a></span><span class="op">(</span><span class="va">seu</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, do.scale <span class="op">=</span> <span class="cn">TRUE</span>, do.center <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="performing-dimensionality-reduction">Performing dimensionality reduction<a class="anchor" aria-label="anchor" href="#performing-dimensionality-reduction"></a>
@@ -271,9 +275,9 @@ reduction technique as algorithms such as t-SNE and UMAP are
 computationally intensive, this reduces the computational load and
 memory required whilst optimizing the performance.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html" class="external-link">RunPCA</a></span><span class="op">(</span><span class="va">seu</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunTSNE.html" class="external-link">RunTSNE</a></span><span class="op">(</span><span class="va">seu</span>, reduction <span class="op">=</span> <span class="st">"pca"</span>, perplexity<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span>
-<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span><span class="va">seu</span>, reduction <span class="op">=</span> <span class="st">"pca"</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">15</span>, min.dist <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/RunPCA.html" class="external-link">RunPCA</a></span><span class="op">(</span><span class="va">seu</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/RunTSNE.html" class="external-link">RunTSNE</a></span><span class="op">(</span><span class="va">seu</span>, reduction <span class="op">=</span> <span class="st">"pca"</span>, perplexity<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span>
+<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span><span class="va">seu</span>, reduction <span class="op">=</span> <span class="st">"pca"</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">15</span>, min.dist <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
 <p>We will visualise the data using the three dimensionality reduction
 approaches above and color the individual data points (denoting single
 cells) by their provided cell type labels. Without much knowledge of the
@@ -298,11 +302,11 @@ perplexity parameter?</li>
 parameter?</li>
 </ul>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunTSNE.html" class="external-link">RunTSNE</a></span><span class="op">(</span><span class="va">seu</span>, reduction <span class="op">=</span> <span class="st">"pca"</span>, reduction.name <span class="op">=</span> <span class="st">"tsne"</span>, perplexity<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/RunTSNE.html" class="external-link">RunTSNE</a></span><span class="op">(</span><span class="va">seu</span>, reduction <span class="op">=</span> <span class="st">"pca"</span>, reduction.name <span class="op">=</span> <span class="st">"tsne"</span>, perplexity<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://satijalab.org/seurat/reference/DimPlot.html" class="external-link">DimPlot</a></span><span class="op">(</span><span class="va">tmp</span>, reduction <span class="op">=</span> <span class="st">"tsne"</span>, group.by <span class="op">=</span> <span class="st">"age"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_of_single-cell_annotation_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span><span class="va">seu</span>, reduction <span class="op">=</span> <span class="st">"pca"</span>, reduction.name <span class="op">=</span> <span class="st">"umap"</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">15</span>, min.dist <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/RunUMAP.html" class="external-link">RunUMAP</a></span><span class="op">(</span><span class="va">seu</span>, reduction <span class="op">=</span> <span class="st">"pca"</span>, reduction.name <span class="op">=</span> <span class="st">"umap"</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">15</span>, min.dist <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://satijalab.org/seurat/reference/DimPlot.html" class="external-link">DimPlot</a></span><span class="op">(</span><span class="va">tmp</span>, reduction <span class="op">=</span> <span class="st">"umap"</span>, group.by <span class="op">=</span> <span class="st">"age"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_of_single-cell_annotation_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <p><br></p>
@@ -344,8 +348,8 @@ similar number of clusters equal to unique cell types.</p>
 <li>How do we choose the right resolution?</li>
 </ul>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindNeighbors.html" class="external-link">FindNeighbors</a></span><span class="op">(</span><span class="va">seu</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html" class="external-link">FindClusters</a></span><span class="op">(</span><span class="va">seu</span>, resolution <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindNeighbors.html" class="external-link">FindNeighbors</a></span><span class="op">(</span><span class="va">seu</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html" class="external-link">FindClusters</a></span><span class="op">(</span><span class="va">seu</span>, resolution <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Number of nodes: 5412</span></span>
@@ -429,7 +433,7 @@ cluster?</li>
 performance using the cell type labels provided from the
 publications.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html" class="external-link">FindClusters</a></span><span class="op">(</span><span class="va">seu</span>, resolution <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="co"># compare with a different resolution</span></span>
+<code class="sourceCode R"><span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindClusters.html" class="external-link">FindClusters</a></span><span class="op">(</span><span class="va">seu</span>, resolution <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="co"># compare with a different resolution</span></span>
 <span><span class="co">#&gt; Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Number of nodes: 5412</span></span>
@@ -527,8 +531,8 @@ reference data and then classify on the remaining data.</p>
 <span><span class="co"># subsample 70% of the data as training dataset, and rest as test</span></span>
 <span><span class="va">idx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/AnnotationDbi/man/Bimap-envirAPI.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">seu</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">seu</span><span class="op">)</span><span class="op">*</span><span class="fl">0.7</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/AssayData.html" class="external-link">GetAssayData</a></span><span class="op">(</span><span class="va">seu</span>, layer<span class="op">=</span><span class="st">"data"</span><span class="op">)</span><span class="op">[</span>, <span class="va">idx</span><span class="op">]</span></span>
-<span><span class="va">test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/AssayData.html" class="external-link">GetAssayData</a></span><span class="op">(</span><span class="va">seu</span>, layer<span class="op">=</span><span class="st">"data"</span><span class="op">)</span><span class="op">[</span>, <span class="op">-</span><span class="va">idx</span><span class="op">]</span></span>
+<span><span class="va">train</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/AssayData.html" class="external-link">GetAssayData</a></span><span class="op">(</span><span class="va">seu</span>, layer<span class="op">=</span><span class="st">"data"</span><span class="op">)</span><span class="op">[</span>, <span class="va">idx</span><span class="op">]</span></span>
+<span><span class="va">test</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/AssayData.html" class="external-link">GetAssayData</a></span><span class="op">(</span><span class="va">seu</span>, layer<span class="op">=</span><span class="st">"data"</span><span class="op">)</span><span class="op">[</span>, <span class="op">-</span><span class="va">idx</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">cellTypes_train</span> <span class="op">&lt;-</span> <span class="va">seu</span><span class="op">$</span><span class="va">cell_cluster</span><span class="op">[</span><span class="va">idx</span><span class="op">]</span></span>
 <span><span class="va">cellTypes_test</span> <span class="op">&lt;-</span> <span class="va">seu</span><span class="op">$</span><span class="va">cell_cluster</span><span class="op">[</span><span class="op">-</span><span class="va">idx</span><span class="op">]</span></span>
@@ -557,8 +561,9 @@ choose pearson as the similarity calculation method.</p>
 <span><span class="co">#&gt; [1] "Number of genes selected to construct HOPACH tree 165"</span></span>
 <span><span class="co">#&gt; [1] "Constructing tree ..."</span></span>
 <span><span class="co">#&gt; [1] "Training...."</span></span>
-<span><span class="co">#&gt; [1] "=== selecting features by: limma ===="</span></span>
-<span></span>
+<span><span class="co">#&gt; [1] "=== selecting features by: limma ===="</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="va">train_scClassify</span></span>
 <span><span class="co">#&gt; Class: scClassifyTrainModel </span></span>
 <span><span class="co">#&gt; Model name: training </span></span>
@@ -567,13 +572,13 @@ choose pearson as the similarity calculation method.</p>
 <span><span class="co">#&gt; Number of cell types in the training data: 4</span></span></code></pre></div>
 <p>We can visualise the cell type hierarchy tree using
 <code>plotCellTypeTree()</code>:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">scClassify</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/scClassify/man/plotCellTypeTree.html" class="external-link">plotCellTypeTree</a></span><span class="op">(</span><span class="va">train_scClassify</span><span class="op">@</span><span class="va">cellTypeTree</span>, group_level <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p><img src="basics_of_single-cell_annotation_files/figure-html/unnamed-chunk-22-1.png" width="700"></p>
 <p>Next, we perform <code>predict_scClassify()</code> with our trained
 model <code>trainRes = train_scClassify</code> to predict the cell types
 of our query data matrix <code>test</code>.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pred_res</span> <span class="op">&lt;-</span> <span class="fu">scClassify</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/scClassify/man/predict_scClassify.html" class="external-link">predict_scClassify</a></span><span class="op">(</span>exprsMat_test <span class="op">=</span> <span class="va">test</span>,</span>
 <span>                               cellTypes_test <span class="op">=</span> <span class="va">cellTypes_test</span>,</span>
 <span>                               trainRes <span class="op">=</span> <span class="va">train_scClassify</span>,</span>
@@ -595,15 +600,16 @@ of our query data matrix <code>test</code>.</p>
 <span><span class="co">#&gt; incorrectly unassigned         error assigned          misclassified </span></span>
 <span><span class="co">#&gt;             0.02709360             0.00000000             0.03140394 </span></span>
 <span><span class="co">#&gt; weights for each base method: </span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span></span>
+<span><span class="co">#&gt; NULL</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="va">scClassify_res</span> <span class="op">&lt;-</span> <span class="va">pred_res</span><span class="op">$</span><span class="va">pearson_WKNN_limma</span><span class="op">$</span><span class="va">predRes</span></span></code></pre></div>
 <p>Then, we check prediction results with the original labels.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df_scClassify</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/Embeddings.html" class="external-link">Embeddings</a></span><span class="op">(</span><span class="va">seu</span>, reduction<span class="op">=</span><span class="st">"umap"</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="va">idx</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_scClassify</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/Embeddings.html" class="external-link">Embeddings</a></span><span class="op">(</span><span class="va">seu</span>, reduction<span class="op">=</span><span class="st">"umap"</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="va">idx</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
 <span>                           label <span class="op">=</span> <span class="va">scClassify_res</span>,</span>
 <span>                           method <span class="op">=</span> <span class="st">"scClassify"</span><span class="op">)</span></span>
-<span><span class="va">df_GT</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/Embeddings.html" class="external-link">Embeddings</a></span><span class="op">(</span><span class="va">seu</span>, reduction<span class="op">=</span><span class="st">"umap"</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="va">idx</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
+<span><span class="va">df_GT</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/Embeddings.html" class="external-link">Embeddings</a></span><span class="op">(</span><span class="va">seu</span>, reduction<span class="op">=</span><span class="st">"umap"</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="va">idx</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
 <span>                           label <span class="op">=</span> <span class="va">seu</span><span class="op">$</span><span class="va">cell_cluster</span><span class="op">[</span><span class="op">-</span><span class="va">idx</span><span class="op">]</span>,</span>
 <span>                           method <span class="op">=</span> <span class="st">"Ground Truth"</span><span class="op">)</span></span>
 <span></span>
@@ -617,7 +623,7 @@ of our query data matrix <code>test</code>.</p>
 <p><img src="basics_of_single-cell_annotation_files/figure-html/unnamed-chunk-24-1.png" width="700"></p>
 <p>We can quickly quantify the number of cells assigned to each unique
 label.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">scClassify_res</span>, <span class="va">cellTypes_test</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                           cellTypes_test</span></span>
 <span><span class="co">#&gt; scClassify_res             Immature-GC Immature-Pyr Neuroblast nIPC</span></span>
@@ -633,10 +639,10 @@ label.</p>
 <div class="section level2">
 <h2 id="save-the-processed-data">Save the processed data<a class="anchor" aria-label="anchor" href="#save-the-processed-data"></a>
 </h2>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html" class="external-link">reducedDim</a></span><span class="op">(</span><span class="va">sce</span>, <span class="st">"PCA"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/Embeddings.html" class="external-link">Embeddings</a></span><span class="op">(</span><span class="va">seu</span>, reduction<span class="op">=</span><span class="st">"pca"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html" class="external-link">reducedDim</a></span><span class="op">(</span><span class="va">sce</span>, <span class="st">"TSNE"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/Embeddings.html" class="external-link">Embeddings</a></span><span class="op">(</span><span class="va">seu</span>, reduction<span class="op">=</span><span class="st">"tsne"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html" class="external-link">reducedDim</a></span><span class="op">(</span><span class="va">sce</span>, <span class="st">"UMAP"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/Embeddings.html" class="external-link">Embeddings</a></span><span class="op">(</span><span class="va">seu</span>, reduction<span class="op">=</span><span class="st">"umap"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># reducedDim(sce, "PCA") &lt;- Embeddings(seu, reduction="pca")</span></span>
+<span><span class="co"># reducedDim(sce, "TSNE") &lt;- Embeddings(seu, reduction="tsne")</span></span>
+<span><span class="co"># reducedDim(sce, "UMAP") &lt;- Embeddings(seu, reduction="umap")</span></span>
 <span></span>
 <span><span class="co"># save(sce, file="data/hippocampus_minimal.rda")</span></span></code></pre></div>
 <p><br></p>
