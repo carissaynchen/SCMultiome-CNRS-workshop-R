@@ -53,7 +53,8 @@ Imports:
     EnsDb.Hsapiens.v86,
     BSgenome.Hsapiens.UCSC.hg38,
     Signac,
-    igraph
+    igraph,
+    CiteFuse
 Suggests: 
     knitr,
     rmarkdown,

@@ -57,9 +57,10 @@ Structure of this section:
 | Activity                                             | Time |
 |------------------------------------------------------|------|
 | Introduction to `CiteFuse`                           | 10m  |
-| Integration and clustering of modalities             | 20m  |
-| Exploratory analysis and differential gene detection | 15m  |
-| Integrative analysis of RNA and ADT modalities       | 15m  |
+| Performing doublet detection                         | Xm   |
+| Integration and clustering of modalities             | Xm   |
+| Exploratory analysis and differential gene detection | Xm   |
+| Integrative analysis of RNA and ADT modalities       | Xm   |
 | Concluding remarks                                   |      |
 
 <br>
@@ -97,6 +98,114 @@ lapply(CITEseq_example, dim)
 
 ```{r}
 sce_citeseq <- preprocessing(CITEseq_example)
+sce_citeseq
+```
+
+<br>
+
+# Performing doublet detection
+
+An important step in single cell data analysis is the removal of doublets. Doublets form as a result of co-encapsulation of cells within a droplet, leading to a hybrid transcriptome from two or more cells. In `CiteFuse`, we implement a step-wise doublet detection approach to remove doublets. We first identify the cross-sample doublets, where cells from different samples are captured as a 'single' cell. Then, we identify within-sample doublets, where two cells from the same sample are captured together in a droplet.
+
+## Normalisation and initial visualisation of HTO counts
+
+The function `normaliseExprs` is used to scale the alternative expression. Here, we used it to perform log-transformation of the `HTO` count, by setting `transform = "log"`.
+
+```{r}
+sce_citeseq <- normaliseExprs(sce = sce_citeseq, 
+                              altExp_name = "HTO", 
+                              transform = "log")
+```
+
+Then we can perform dimension reduction on the `HTO` count by using `runTSNE` or `runUMAP`, then use `visualiseDim` function to visualise the reduced dimension plot. Our CITE-seq dataset contain data from four samples that were pooled before sequencing. The samples were multiplexed through cell hashing [Stoeckius et al., 2018](https://doi.org/10.1038/nmeth.4380). The four clusters observed on reduced dimension plots equate to the four different samples. 
+
+```{r fig.height=6}
+sce_citeseq <- scater::runTSNE(sce_citeseq, 
+                               altexp = "HTO", 
+                               name = "TSNE_HTO", 
+                               pca = TRUE)
+
+sce_citeseq <- scater::runUMAP(sce_citeseq, 
+                               altexp = "HTO", 
+                               name = "UMAP_HTO")
+
+p1 <- visualiseDim(sce_citeseq,
+             dimNames = "TSNE_HTO") + labs(title = "tSNE (HTO)")
+p2 <- visualiseDim(sce_citeseq,
+             dimNames = "UMAP_HTO") + labs(title = "UMAP (HTO)")
+
+p1 + p2
+```
+
+<br>
+
+## Doublet identification step 1: cross-sample doublet detection
+
+To predict cross-sample doublets, we fit a two-component Gaussian mixture model to each log-transformed HTO count. The intersection point defined from the mixture model is used to categorize each cell in terms of whether the HTO signal is either high or low. Because a sample is stained with a hashtag that is distinctive to that sample, all cells should in theory be associated with only one HTO signal and show negligible signal of others. Therefore, any cells found to have a single high-signal HTO are considered singlets whilst those that have two or more high-signal HTOs are considered doublets or multiplets. Cells without any high-signal HTOs are considered as empty droplets.
+
+We run `crossSampleDoublets` where results of the cross sample doublets are then saved in the `colData` slot as `doubletClassify_between_label` and `doubletClassify_between_class`.
+
+```{r}
+sce_citeseq <- crossSampleDoublets(sce_citeseq)
+```
+
+```{r}
+table(sce_citeseq$doubletClassify_between_label)
+table(sce_citeseq$doubletClassify_between_class)
+```
+
+We can then highlight the cross-sample doublets in our tSNE plot of HTO count. How would we visualise the between label and between class doublets side-by-side?
+
+```{r fig.height=6, fig.width=6}
+visualiseDim(sce_citeseq, 
+             dimNames = "TSNE_HTO", 
+             colour_by = "doubletClassify_between_label")
+
+# insert code to visualise "doubletClassify_between_class"
+```
+
+<br>
+
+## Doublet identification step 2: within-sample doublet detection
+
+Data filtered by cross-sample doublets are next subject to within-sample doublet identification using a density-based spatial clustering and noise detection algorithm (DBSCAN) on a matrix comprising of two types of features—total unique molecular identifier (UMI) count and log-transformed HTO count. The two parameters used in the DBSCAN for this study are eps=190 and minPts=50. The smallest cluster (i.e. outliers) from DBSCAN clustering is assigned as the within-sample doublets.
+
+We then identify the within-sample doublets via the `withinSampleDoublets` function. The results of the cross sample doublets are then saved in the `colData` as `doubletClassify_within_label` and `doubletClassify_within_class`.
+
+**Questions:**
+
++ What are the `eps` and `minPts` parameters?
++ What happens when you vary these parameters?
+
+```{r}
+sce_citeseq <- withinSampleDoublets(sce_citeseq, minPts = 10)
+```
+
+```{r}
+table(sce_citeseq$doubletClassify_within_label)
+table(sce_citeseq$doubletClassify_within_class)
+```
+
+Again, we can visualise the within-sample doublets in our tSNE plot. How would we visualise the within label and within class doublets side-by-side?
+
+```{r fig.height=6, fig.width=6}
+visualiseDim(sce_citeseq, 
+             dimNames = "TSNE_HTO", 
+             colour_by = "doubletClassify_within_label")
+
+# insert code to visualise "doubletClassify_within_class"
+```
+
+Furthermore, `plotHTO` function allows us to plot the pairwise scatter HTO count. Any cells that show co-expression of orthogonal HTOs (red) are considered as doublets. Which comparison has the most cross-sample doublets?
+
+```{r fig.height=8, fig.width=6}
+plotHTO(sce_citeseq, 1:4)
+```
+
+Finally, we can filter out the doublet cells (both within and between batches) for the downstream analysis.
+
+```{r}
+sce_citeseq <- sce_citeseq[, sce_citeseq$doubletClassify_within_class == "Singlet" & sce_citeseq$doubletClassify_between_class == "Singlet"]
 sce_citeseq
 ```
 
@@ -176,19 +285,6 @@ sce_citeseq$ADT_clust <- as.factor(SNF_W1_clust$labels)
 
 SNF_W2_clust <- spectralClustering(metadata(sce_citeseq)[["RNA_W"]], K = 5)
 sce_citeseq$RNA_clust <- as.factor(SNF_W2_clust$labels)
-
-g1 <- visualiseDim(sce_citeseq, dimNames = "tSNE_joint", colour_by = "SNF_W_clust") +
-  labs(title = "tSNE (SNF spectral clustering)")
-
-g2 <- visualiseDim(sce_citeseq, dimNames = "tSNE_joint", colour_by = "ADT_clust") +
-  labs(title = "tSNE (ADT spectral clustering)")
-
-g3 <- visualiseDim(sce_citeseq, dimNames = "tSNE_joint", colour_by = "RNA_clust") +
-  labs(title = "tSNE (RNA spectral clustering)")
-
-g1
-
-g2 + g3
 ```
 
 <br>
@@ -437,11 +533,19 @@ visLigandReceptor(sce_citeseq,
                   receptor_type = "ADT")
 ```
 
+**Alternative visualisation 3:** Similarly, we can visualise the above counts of LR-pairs in a heatmap.
+
+```{r fig.height=8, fig.width=8}
+visLigandReceptor(sce_citeseq, 
+                  type = "group_heatmap",
+                  receptor_type = "ADT")
+```
+
 <br>
 
-# Evaluating the importance of ADT markers in clustering using random forest
+# [Optional] Evaluating the importance of ADT markers in clustering
 
-An important evaluation in CITE-seq data analysis is to assess the quality of each ADT and to evaluate the contribution of ADTs towards clustering outcome. `CiteFuse` calculates the relative importance of ADT towards clustering outcome by using a random forest model. The higher the score of an ADT, the greater its importance towards the final clustering outcome.
+An important evaluation in CITE-seq data analysis is to assess the quality of each ADT and to evaluate the contribution of ADTs towards clustering outcome. `CiteFuse` calculates the relative importance of ADT towards clustering outcome by using a random forest model. The higher the score of an ADT, the greater its importance towards the final clustering outcome. 
 
 ```{r fig.height = 8, fig.width = 8}
 set.seed(2024)
@@ -450,13 +554,88 @@ sce_citeseq <- importanceADT(sce_citeseq,
                              subsample = TRUE)
 ```
 
-The importance scores can be visualised in a boxplot. Our evaluation of ADT importance show that unsurprisingly CD4 and CD8 are the top two discriminating proteins in PBMCs. 
+The importance scores can be visualised in a boxplot and heatmap. Our evaluation of ADT importance show that unsurprisingly CD4 and CD8 are the top two discriminating proteins in PBMCs. 
 
 ```{r warning=FALSE, fig.height=6, fig.width=12}
 visImportance(sce_citeseq, plot = "boxplot")
 ```
 
 ```{r}
+visImportance(sce_citeseq, plot = "heatmap")
+```
+
+```{r}
 # view the top 20 markers by decreasing importance
 sort(metadata(sce_citeseq)[["importanceADT"]], decreasing = TRUE)[1:20]
+```
+
+To test whether we would obtain similar clustering results by using a subset of important markers, we can try integration and clustering with only ADTs with a score greater than 5.
+
+```{r}
+subset_adt <- names(which(metadata(sce_citeseq)[["importanceADT"]] > 5))
+subset_adt
+```
+
+```{r}
+sce_citeseq <- CiteFuse(sce_citeseq,
+                        ADT_subset = subset_adt,
+                        metadata_names = c("W_SNF_adtSubset1",
+                                           "W_ADT_adtSubset1",
+                                           "W_RNA"))
+
+set.seed(2024)
+SNF_W_clust_adtSubset1 <- spectralClustering(metadata(sce_citeseq)[["W_SNF_adtSubset1"]], K = 5)
+sce_citeseq$SNF_W_clust_adtSubset1 <- as.factor(SNF_W_clust_adtSubset1$labels)
+```
+
+To see how well the integration performed with only a subset of ADT markers, we can calculate the concordance between the labels (ie. adjusted rand index, ARI).
+
+```{r}
+mclust::adjustedRandIndex(sce_citeseq$SNF_W_clust_adtSubset1, sce_citeseq$SNF_W_clust)
+```
+
+**Interpretation:**
+
+When we compare between the two clustering outcomes, we find that the ARI is approximately 0.85, where a value of 1 denotes complete concordance. This high ARI value suggests that the top markers are the primary contributors to the biological signals in the data, significantly influencing the integration and clustering patterns.
+
+**Discussion:**
+
+- What would the concordance be if we set an even higher threshold for important ADT markers?
+
+<br>
+
+# [Optional] Performing multi-sample analysis with `CiteFuse`
+
+Lastly, we will jointly analyse the current PBMC CITE-seq data, taken from healthy human donors, and another subset of CITE-seq data from patients with cutaneous T-cell lymphoma (CTCL), again from Mimitou et al. (2019). The data `sce_ctcl_subset` provided in our `CiteFuse` package already contains the clustering information.
+
+```{r}
+data("sce_ctcl_subset", package = "CiteFuse")
+```
+
+To visualise and compare gene or protein expression data, we can use `visualiseExprsList` function. Here, we visualise the gene expression of a subset of genes across the two conditions and individually for each identified cluster.
+
+**Questions:**
+
+- How would we visualise the ADT expression?
+
+```{r}
+visualiseExprsList(sce_list = list(control = sce_citeseq, ctcl = sce_ctcl_subset),
+                   plot = "boxplot",
+                   altExp_name = "none",
+                   exprs_value = "logcounts",
+                   feature_subset = c("hg19_S100A10", "hg19_CD8A"),
+                   group_by = c("SNF_W_louvain", "SNF_W_louvain"))
+
+# fill in code to visualise the ADT expression of CD19 and CD8 across the conditions
+```
+
+We can then perform differential expression analysis of the RNA expression level across the two clusters that have high CD19 expression in ADT. Can you gather anything biologically meaningful about the clusters from looking at the top DE genes?
+
+```{r}
+de_res <- DEgenesCross(sce_list = list(control = sce_citeseq, ctcl = sce_ctcl_subset),
+                       colData_name = c("SNF_W_louvain", "SNF_W_louvain"),
+                       group_to_test = c("2", "6"))
+
+de_res_filter <- selectDEgenes(de_res = de_res)
+de_res_filter
 ```

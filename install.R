@@ -29,7 +29,7 @@ std_pkgs <- c(
   "edgeR", "Rtsne", "scales",
   "slingshot" , "UpSetR", 
   "clusterExperiment", "clusterProfiler", "scHOT", "org.Mm.eg.db",
-  "BSgenome.Hsapiens.UCSC.hg38", "scuttle", "igraph"
+  "BSgenome.Hsapiens.UCSC.hg38", "scuttle", "igraph", "CiteFuse"
 )
 remotes::install_github("satijalab/seurat", "seurat5", quiet = TRUE)
 

@@ -11,8 +11,10 @@ navbar:
         href: articles/introduction_to_single-cell.html
       - text: Basics of single-cell annotation
         href: articles/basics_of_single-cell_annotation.html
-      - text: Advanced Cell Phenotyping
+      - text: Advanced cell phenotyping
         href: articles/advancedphenotyping.html
+      - text: Analysing CITE-seq data with CiteFuse
+        href: articles/citefuse.html
    github:
       icon: fa-github
       href: https://github.com/carissaynchen/SCMultiome-CNRS-workshop-R
