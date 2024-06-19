@@ -5,6 +5,8 @@ author: Carissa Chen^[cchen@cmri.org.au]
         Pengyi Yang^[pyang@cmri.org.au]
 output:
   html_document:
+    theme: flatly
+    css: https://use.fontawesome.com/releases/v5.0.6/css/all.css
     code_folding: show
     number_sections: true
     toc: yes
@@ -33,7 +35,7 @@ scRNA-seq has allowed us to dissect complex cell populations at the transcriptom
 
 <br>
 
-## Preparation and assumed knowledge
+<span class="fa-stack fa"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i></span> **Preparation and assumed knowledge**
 
 - [CITE-seq technology](https://www.nature.com/articles/nmeth.4380)
 - [Analysing CITE-seq with CiteFuse](https://doi.org/10.1093/bioinformatics/btaa282)
@@ -41,7 +43,7 @@ scRNA-seq has allowed us to dissect complex cell populations at the transcriptom
 
 <br>
 
-## Learning objectives
+<span class="fa-stack fa"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-location-arrow fa-stack-1x fa-inverse"></i></span> **Learning objectives**
 
 - understand the output of CITE-seq data
 - how to pre-process CITE-seq data
@@ -255,7 +257,10 @@ visualiseExprs(sce_citeseq,
                feature_subset = c("hg19_CD2", "hg19_CD4", "hg19_CD8A", "hg19_CD19"))
 ```
 
-**Questions:**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 - From these collection of visualisations, do you notice any markers that are differentially expressed in any clusters?
 - How would you plot the above, but for ADT?
@@ -268,7 +273,10 @@ visualiseExprs(sce_citeseq, altExp_name = "ADT",
                feature_subset = c("CD4", "CD8"))
 ```
 
-**Questions:**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 - What do each of the quadrants correspond to?
 - Do we have many cells that co-express both markers?
@@ -296,8 +304,10 @@ sce_citeseq <- DEgenes(sce_citeseq,
 sce_citeseq <- selectDEgenes(sce_citeseq,
                              altExp_name = "none")
 
-datatable(format(do.call(rbind, metadata(sce_citeseq)[["DE_res_RNA_filter"]]), 
-                 digits = 2))
+tab <- format(do.call(rbind, metadata(sce_citeseq)[["DE_res_RNA_filter"]]), 
+                 digits = 2)
+dt <- datatable(tab, options = list(scrollX=TRUE))
+dt
 ```
 
 ### For ADT modality
@@ -312,8 +322,10 @@ sce_citeseq <- DEgenes(sce_citeseq,
 sce_citeseq <- selectDEgenes(sce_citeseq,
                              altExp_name = "ADT")
 
-datatable(format(do.call(rbind, metadata(sce_citeseq)[["DE_res_ADT_filter"]]), 
-                 digits = 2))
+tab <- format(do.call(rbind, metadata(sce_citeseq)[["DE_res_ADT_filter"]]), 
+                 digits = 2)
+dt <- datatable(tab, options = list(scrollX=TRUE))
+dt
 ```
 
 <br> 
@@ -351,7 +363,10 @@ For each louvain-generated groups, we compare the -log10 transformed p-values of
 
 We can generate a network diagram using the `geneADTnetwork` function  to examine the association between the differentially expressed genes and protein markers. We specify the unique DE genes across all clusters from the RNA and ADT modalities and calculate the correlation between the genes using all cells. The nodes denote proteins and RNA whilst the edges denote positive and negative correlation in expression. 
 
-**Questions:**
+<span class="fa-stack fa-lg">
+  <i class="fa fa-circle fa-stack-2x"></i>
+  <span class="far fa-comment fa-stack-1x fa-inverse"></span>
+</span> **Discussion:**
 
 - Do the results change if we use a different correlation method?
 - What if we vary the `cor_threshold` parameter?
