@@ -15,6 +15,8 @@ navbar:
         href: articles/advancedphenotyping.html
       - text: Analysing CITE-seq data with CiteFuse
         href: articles/citefuse.html
+      - text: Introduction to 10x multiome
+        href: articles/introduction_to_10x_multiome.html
    github:
       icon: fa-github
       href: https://github.com/carissaynchen/SCMultiome-CNRS-workshop-R
