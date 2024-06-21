@@ -14,6 +14,13 @@ if(BiocManager::version() != "3.18"){
 
 # install dependency from source
 install.packages("https://cran.r-project.org/src/contrib/Archive/howmany/howmany_0.3-1.tar.gz", repos=NULL, type="source")
+install.packages('caret', dependencies = TRUE)
+install.packages('glue')
+install.packages('data.table')
+install.packages("aricode")
+install.packages("umap")
+install.packages('ggcorrplot')
+install.packages('pheatmap')
 
 helpers <- c("devtools", "remotes", "batchelor", "pcaMethods")
 for (helper in helpers)
@@ -29,9 +36,11 @@ std_pkgs <- c(
   "edgeR", "Rtsne", "scales",
   "slingshot" , "UpSetR", 
   "clusterExperiment", "clusterProfiler", "scHOT", "org.Mm.eg.db",
-  "BSgenome.Hsapiens.UCSC.hg38", "scuttle", "igraph", "CiteFuse"
+  "BSgenome.Hsapiens.UCSC.hg38", "scuttle", "igraph", "CiteFuse",
+  'rhdf5', 'HDF5Array', 'rtracklayer', 'GenomicRanges', 'scClassify',
 )
 remotes::install_github("satijalab/seurat", "seurat5", quiet = TRUE)
+remotes::install_github("mojaveazure/seurat-disk", quiet = TRUE)
 
 gh_pkgs <- c("MarioniLab/DropletUtils",
 "jokergoo/ComplexHeatmap",
