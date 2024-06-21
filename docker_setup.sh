@@ -27,13 +27,15 @@ wget https://cf.10xgenomics.com/samples/cell-arc/1.0.0/pbmc_granulocyte_sorted_1
 wget https://cf.10xgenomics.com/samples/cell-arc/1.0.0/pbmc_granulocyte_sorted_10k/pbmc_granulocyte_sorted_10k_atac_fragments.tsv.gz.tbi
 wget --user-agent="Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36" https://atlas.fredhutch.org/data/nygc/multimodal/pbmc_multimodal.h5seurat
 
-#wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1Rq9hqwxJDFTKxktArCxpSD0UgdlDxHhr' -O '/home/gittmp/data/pbmc3k.rds'
-#wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1dvMp-JBietBj4YuMMCTP_ogLewtaSfUm' -O '/home/gittmp/data/pbmc10k.rds'
-#wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1vEmPl0vcKUTXkih8MJZFkU4X4xWiO7hH' -O '/home/gittmp/data/output.zip'
-#get --no-check-certificate 'https://docs.google.com/uc?export=download&id=1BeK6CY6QjY39v8DsAUFtvg9Bg7uoHc8J' -O '/home/gittmp/data/Homo_sapiens.GRCh37.82.gtf'
-#unzip /home/gittmp/data/output.zip -d 
+wget https://biodata2024.blob.core.windows.net/biodata/pbmc3k.rds
+wget https://biodata2024.blob.core.windows.net/biodata/pbmc10k.rds
+wget https://biodata2024.blob.core.windows.net/biodata/output.zip
+wget https://biodata2024.blob.core.windows.net/biodata/Homo_sapiens.GRCh37.82.gtf
 
-mv pbmc_* /home/gittmp/data
+
+mv pbmc* /home/gittmp/data
+mv Homo_sapiens.GRCh37.82.gtf /home/gittmp/data
+unzip /home/gittmp/data/output.zip -d /home/gittmp/data
 
 
 ls /home/
