@@ -54,7 +54,14 @@ Imports:
     BSgenome.Hsapiens.UCSC.hg38,
     Signac,
     igraph,
-    CiteFuse
+    CiteFuse,
+    caret,
+    glue,
+    data.table,
+    aricode,
+    umap,
+    ggcorrplot,
+    pheatmap
 Suggests: 
     knitr,
     rmarkdown,

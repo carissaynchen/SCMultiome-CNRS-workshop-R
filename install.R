@@ -37,7 +37,7 @@ std_pkgs <- c(
   "slingshot" , "UpSetR", 
   "clusterExperiment", "clusterProfiler", "scHOT", "org.Mm.eg.db",
   "BSgenome.Hsapiens.UCSC.hg38", "scuttle", "igraph", "CiteFuse",
-  'rhdf5', 'HDF5Array', 'rtracklayer', 'GenomicRanges', 'scClassify',
+  'rhdf5', 'HDF5Array', 'rtracklayer', 'GenomicRanges', 'scClassify'
 )
 remotes::install_github("satijalab/seurat", "seurat5", quiet = TRUE)
 remotes::install_github("mojaveazure/seurat-disk", quiet = TRUE)
