@@ -4,6 +4,5 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/sunny-might-421907-m4/scmultiomecnrsr:alpha']
 options:
- machineType: 'E2_STANDARD_2'
  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
 timeout: 9600s
