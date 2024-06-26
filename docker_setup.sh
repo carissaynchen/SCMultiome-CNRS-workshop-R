@@ -35,7 +35,7 @@ wget https://biodata2024.blob.core.windows.net/biodata/Homo_sapiens.GRCh37.82.gt
 
 mv pbmc* /home/gittmp/data
 mv Homo_sapiens.GRCh37.82.gtf /home/gittmp/data
-unzip /home/gittmp/data/output.zip -d /home/gittmp/data
+unzip output.zip -d /home/gittmp/data
 
 
 ls /home/
