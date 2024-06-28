@@ -56,11 +56,11 @@ Cellular phenotyping broadly refers to all procedures that aim to identify the i
 
 | Activity                           | Time |
 |------------------------------------|------|
-| Introduction                       | 10m  |
-| How to infer the a trajectory      | Xm   |
-| Visualisation of the trajectory    | Xm   |
-| Evaluating the trajectory          | Xm   |
-| Characterisation of the trajectory | Xm   |
+| Introduction                       | 5m  |
+| How to infer the a trajectory      | 20m   |
+| Visualisation of the trajectory    | 20m   |
+| Evaluating the trajectory          | 30m   |
+| Characterisation of the trajectory | 60m   |
 | Concluding remarks                 |      |
 
 <br>
@@ -448,8 +448,10 @@ Next, using the fitted gene expressions, we can assess for significant changes i
 ```{r eval = TRUE}
 assoRes <- associationTest(slingshot_umap[cepoGenes, ], global = TRUE, lineages = TRUE)
 assoRes <- assoRes[order(assoRes$waldStat, decreasing = TRUE),]
-datatable(assoRes) %>%
+
+dt <- DT::datatable(assoRes, options = list(scrollX=TRUE)) %>%
   formatSignif(which(sapply(assoRes, is, 'numeric')), digits = 3)
+dt
 
 ## extracting candidate from each lineage
 lineage1Genes <-  rownames(assoRes)[which(p.adjust(assoRes$pvalue_1, "fdr") <= 0.05)]

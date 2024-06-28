@@ -58,9 +58,9 @@ Structure of this section:
 | Activity                                             | Time |
 |------------------------------------------------------|------|
 | Introduction                                         | 10m  |
-| Data visualisation using dimensionality reduction | Xm   |
-| Unsupervised clustering and annotation of scRNA-seq data               | Xm   |
-| Perform cell classification with `scClassify`                               | Xm   |
+| Data visualisation using dimensionality reduction | 20m   |
+| Unsupervised clustering and annotation of scRNA-seq data               | 20m   |
+| Perform cell classification with `scClassify`                               | 20m   |
 | Concluding remarks                                   |      |
 
 <br>
@@ -162,13 +162,13 @@ seu <- Seurat::RunUMAP(seu, reduction = "pca", dims = 1:15, min.dist = 0.5)
 We will visualise the data using the three dimensionality reduction approaches above and color the individual data points (denoting single cells) by their provided cell type labels. Without much knowledge of the biological system, can you guess whether we have discrete or continuous cell types? What can you infer about the lineages?
 
 ```{r fig.height=10, fig.width=15}
-p1 <- DimPlot(seu, reduction = "pca", group.by = "age") + ggtitle("PCA")
-p2 <- DimPlot(seu, reduction = "tsne", group.by = "age") + ggtitle("TSNE")
-p3 <- DimPlot(seu, reduction = "umap", group.by = "age") + ggtitle("UMAP")
+p1 <- Seurat::DimPlot(seu, reduction = "pca", group.by = "age") + ggtitle("PCA")
+p2 <- Seurat::DimPlot(seu, reduction = "tsne", group.by = "age") + ggtitle("TSNE")
+p3 <- Seurat::DimPlot(seu, reduction = "umap", group.by = "age") + ggtitle("UMAP")
 
-p4 <- DimPlot(seu, reduction = "pca", group.by = "cell_cluster") + ggtitle("PCA")
-p5 <- DimPlot(seu, reduction = "tsne", group.by = "cell_cluster") + ggtitle("TSNE")
-p6 <- DimPlot(seu, reduction = "umap", group.by = "cell_cluster") + ggtitle("UMAP")
+p4 <- Seurat::DimPlot(seu, reduction = "pca", group.by = "cell_cluster") + ggtitle("PCA")
+p5 <- Seurat::DimPlot(seu, reduction = "tsne", group.by = "cell_cluster") + ggtitle("TSNE")
+p6 <- Seurat::DimPlot(seu, reduction = "umap", group.by = "cell_cluster") + ggtitle("UMAP")
 
 patchwork::wrap_plots(list(p1, p2, p3, p4, p5, p6), nrow=2, guides="collect")
 ```
@@ -201,9 +201,9 @@ There may not always be a suitable reference dataset for your single-cell RNA-se
 We will cluster the cells using the Seurat implementation of louvain clustering. When we separately visualise the cells by time, we see the cells overlap regardless of which timepoint they belong to, therefore we will cluster the data together.
 
 ```{r fig.height=6, fig.width=15}
-p1 <- DimPlot(seu, reduction = "pca", group.by = "age", split.by = "age") + ggtitle("PCA")
-p2 <- DimPlot(seu, reduction = "tsne", group.by = "age", split.by = "age") + ggtitle("TSNE")
-p3 <- DimPlot(seu, reduction = "umap", group.by = "age", split.by = "age") + ggtitle("UMAP")
+p1 <- Seurat::DimPlot(seu, reduction = "pca", group.by = "age", split.by = "age") + ggtitle("PCA")
+p2 <- Seurat::DimPlot(seu, reduction = "tsne", group.by = "age", split.by = "age") + ggtitle("TSNE")
+p3 <- Seurat::DimPlot(seu, reduction = "umap", group.by = "age", split.by = "age") + ggtitle("UMAP")
 
 patchwork::wrap_plots(list(p1, p2, p3), nrow=1, guides="collect")
 ```
@@ -235,8 +235,8 @@ Then, once we have generated the unique clusters, we can annotate the data using
 + How do you think the unsupervised clustering performed?
 
 ```{r fig.height=6, fig.width=12}
-p1 <- DimPlot(seu, reduction = "umap", group.by = "RNA_snn_res.0.1") + ggtitle("UMAP")
-p2 <- DimPlot(seu, reduction = "umap", group.by = "cell_cluster") + ggtitle("UMAP")
+p1 <- Seurat::DimPlot(seu, reduction = "umap", group.by = "RNA_snn_res.0.1") + ggtitle("UMAP")
+p2 <- Seurat::DimPlot(seu, reduction = "umap", group.by = "cell_cluster") + ggtitle("UMAP")
 
 p1 + p2
 ```
@@ -261,7 +261,7 @@ Feel free to visualise different marker genes to visualise the distribution of t
 ```{r fig.height=10, fig.width=10}
 markers = c("TFAP2C", "NEUROG2", "EOMES", "IGFBPL1", "FXYD1", "PROX1", "NCAM1")
 
-FeaturePlot(seu, features = markers, reduction = "umap", pt.size = 0.2)
+Seurat::FeaturePlot(seu, features = markers, reduction = "umap", pt.size = 0.2)
 ```
 
 Alternatively, we can use the cluster assignments and perform differential expression analysis to find differential genes between clusters to define cell types. Lets use it to see if we can find markers for the immature pyramidal cells.
@@ -399,9 +399,12 @@ We first perform non-ensemble scClassify by using 70% data as our reference data
 train_scClassify <- scClassify::train_scClassify(exprsMat_train = train, 
                                            cellTypes_train = cellTypes_train,
                                            algorithm = "WKNN",
-                                           selectFeatures = c("limma"),
+                                           selectFeatures = c("limma", "BI"),
                                            similarity = c("pearson"),
+                                           weightsCal = TRUE,
                                            returnList = FALSE,
+                                           parallel = TRUE,
+                                           BPPARAM = BiocParallel::MulticoreParam(3),
                                            verbose = TRUE)
 
 train_scClassify
@@ -420,9 +423,12 @@ pred_res <- scClassify::predict_scClassify(exprsMat_test = test,
                                cellTypes_test = cellTypes_test,
                                trainRes = train_scClassify,
                                algorithm = "WKNN",
-                               features = c("limma"),
+                               features = c("limma", "BI"),
                                similarity = c("pearson"),
+                               weighted_ensemble = TRUE,
                                prob_threshold = 0.7,
+                               parallel = TRUE,
+                               BPPARAM = BiocParallel::MulticoreParam(3),
                                verbose = TRUE)
 
 scClassify_res <- pred_res$pearson_WKNN_limma$predRes

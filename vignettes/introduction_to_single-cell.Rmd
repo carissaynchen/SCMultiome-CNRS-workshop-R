@@ -2,6 +2,7 @@
 title: "Introduction to Single-cell Pre-processing"
 author: Carissa Chen^[cchen@cmri.org.au]
         Sharon Long^[slong@cmri.org.au]
+        Pengyi Yang^[pyang@cmri.org.au]
 output:
   html_document:
     theme: flatly
@@ -58,10 +59,10 @@ Structure of this section:
 
 | Activity                                             | Time |
 |------------------------------------------------------|------|
-| Introduction                                         | 10m  |
-| Data quality inspection                              | Xm   |
-| Cell filtering and generating QC plots               | Xm   |
-| Identifying cell types                               | Xm   |
+| Introduction                                         | 15m  |
+| Data quality inspection                              | 20m   |
+| Cell filtering and generating QC plots               | 20m   |
+| Identifying cell types                               | 20m   |
 | Concluding remarks                                   |      |
 
 <br>
@@ -253,7 +254,7 @@ After running `scDblFinder`, we first plot a bar plot to visualise how many doub
 + Is this expected and why?
 
 ```{r cache=FALSE}
-sce <- scDblFinder::scDblFinder(sce, samples="age", clusters=TRUE, BPPARAM=MulticoreParam(3))
+sce <- scDblFinder::scDblFinder(sce, samples="age", clusters=TRUE, BPPARAM=BiocParallel::MulticoreParam(3))
 ```
 
 ```{r fig.height=4}
